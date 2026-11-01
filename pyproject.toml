@@ -1,0 +1,11 @@
+[project]
+name = "no-ui-data-stack-workshop"
+version = "0.1.0"
+description = "The Next Data Stack Has No UI: build an analytics agent end to end with DuckDB and MotherDuck"
+requires-python = ">=3.11"
+# Pinned to 1.5.x because MotherDuck and Flights run 1.5.x today.
+# DuckDB 2.0 shipped 2026-10-21: bump once MotherDuck supports it.
+dependencies = ["duckdb>=1.5.2,<1.6"]
+
+[tool.uv]
+package = false

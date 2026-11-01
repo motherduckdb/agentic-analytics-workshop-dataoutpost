@@ -1,0 +1,24 @@
+# local warehouses
+*.duckdb
+*.duckdb.wal
+
+# agent trace, ledger, teardown lock
+.workshop/
+
+# python
+.venv/
+__pycache__/
+
+# slides build
+slides/node_modules/
+slides/dist/
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# parked/duckoffee generated data (rebuild with: uv run python facilitator/generate.py)
+parked/duckoffee/data/
+parked/duckoffee/facilitator/breaks/
+parked/duckoffee/facilitator/answer_key/

@@ -1,0 +1,333 @@
+[
+  {
+    "id": "hero",
+    "title": "The next data stack has no UI",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "MOTHERDUCK WORKSHOP",
+    "notes": "DRAFT DECK. 90 minutes, six chapters, each mapped to a MotherDuck feature with a short hands-on. Timing: intro 0:00, the agent 0:05, context 0:25, interface 0:38, isolation 0:50, access 0:56, observability 1:10, wrap 1:18. Before we start: hand out the temporary AI keys and the generator URL. Mehdi drives slides, Jacob walks the room during hands-on (split to confirm)."
+  },
+  {
+    "id": "agenda",
+    "title": "Six things every analytics agent needs",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "00 · TODAY",
+    "notes": "Click a chapter to jump. Chapter 1 is the longest: it builds the vocabulary (loop, tools, context, harness, MCP, skills) the rest of the workshop uses. Then the pattern repeats: the fundamental in about 4 minutes, the MotherDuck feature that answers it, a short hands-on. The terminal is only needed in chapter 1. From chapter 2 on, everything runs in the browser."
+  },
+  {
+    "id": "solved",
+    "title": "Text to SQL is solved",
+    "body": "Knowing what your business means by “revenue” is not.",
+    "kind": "statement",
+    "theme": "ink",
+    "section": "00 · WHY THIS WORKSHOP",
+    "notes": "Every model in the room writes valid SQL. The hard part is the definition: which rows count, which units, which days. That is what the next 85 minutes are about. Keep this under a minute."
+  },
+  {
+    "id": "s01",
+    "title": "01 · The agent",
+    "body": "A model in a loop, with tools, context and a harness around it.",
+    "kind": "title",
+    "theme": "duck",
+    "section": "01 · THE AGENT",
+    "notes": "0:05. Twenty minutes: about 11 of talk, 9 of hands-on. The goal is shared vocabulary. By the end, everyone can name the parts of any agent they meet."
+  },
+  {
+    "id": "spectrum",
+    "title": "Chatbot, workflow, agent",
+    "kind": "custom",
+    "section": "01 · THE AGENT",
+    "source": "https://www.anthropic.com/engineering/building-effective-agents",
+    "sourceLabel": "ANTHROPIC · BUILDING EFFECTIVE AGENTS",
+    "notes": "One question separates them: who decides the next step? Anthropic's definition: workflows orchestrate LLMs and tools through predefined code paths, agents let the LLM direct its own process and tool use. Most production systems mix both: an agent can call a workflow as a tool. prompt_jev() in SQL is a workflow step. Claude Code exploring a folder is an agent.",
+    "theme": "sand"
+  },
+  {
+    "id": "loop",
+    "title": "The loop",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "01 · THE AGENT",
+    "notes": "The model never touches the data. It writes a tool call, the harness runs it, the result goes back into the conversation, and the model decides again. It stops when it answers without asking for a tool. Around the loop sit three things we spend the workshop on: context (what the model knows), harness (what the app lets it do) and interface (where the user asks)."
+  },
+  {
+    "id": "loop-code",
+    "title": "The whole agent, in pseudo code",
+    "kind": "code",
+    "theme": "sand",
+    "section": "01 · THE AGENT",
+    "codeLabel": "PSEUDO CODE / THE AGENT LOOP",
+    "language": "loop",
+    "code": "messages = [question]\nloop:\n    reply = model(messages, tools, context)\n    if reply.wants_tool:\n        result = run(reply.tool_call)    # SQL on DuckDB or MotherDuck\n        messages += [reply, result]\n    else:\n        return reply.text",
+    "notes": "Press H to walk the lines. TODO: replace with the real 40-line version (Claude API plus the MotherDuck MCP) once the generator code exists, so the slide and the app show the same loop."
+  },
+  {
+    "id": "anatomy",
+    "title": "The parts of an agent",
+    "kind": "custom",
+    "section": "01 · THE AGENT",
+    "notes": "Seven parts. Read the last column: everyone will set each of these in the generator in chapter 3. The model is the only part you rent. Everything else is software you, or your vendor, write. A system prompt is just text sent first on every call. CLAUDE.md is appended to Claude Code's own system prompt.",
+    "theme": "sand"
+  },
+  {
+    "id": "window",
+    "title": "What the model sees on every turn",
+    "kind": "custom",
+    "section": "01 · THE AGENT",
+    "notes": "The model is stateless. Each turn, the harness sends the whole window again: system prompt, tool definitions (every MCP tool adds its name, description and schema), memory files, skill descriptions, the conversation and every tool result so far. When it fills up, the harness summarizes old turns. This is why a 10,000-row result hurts: it stays in the window. It is also why DuckDB's agent mode matters. Hands-on later: /context in Claude Code shows the real split.",
+    "theme": "sand"
+  },
+  {
+    "id": "mcp",
+    "title": "MCP: tools written once, for any agent",
+    "kind": "custom",
+    "section": "01 · THE AGENT · MOTHERDUCK FEATURE",
+    "source": "https://modelcontextprotocol.io",
+    "sourceLabel": "MODELCONTEXTPROTOCOL.IO",
+    "notes": "Model Context Protocol: a standard way for a server to expose tools (and resources and prompts) to any client. The client lists the tools, puts their definitions in the context, and calls them when the model asks. MotherDuck runs a remote MCP server at api.motherduck.com/mcp: the same tools work in Claude Code, claude.ai, ChatGPT, Cursor or your own app. Tool names on the slide are from the production server. The server also sends instructions at connect time, with client-specific guides (the repo has separate dive guides for Claude Code, claude.ai, ChatGPT and other clients).",
+    "theme": "sand"
+  },
+  {
+    "id": "instructions",
+    "title": "Five places to tell an agent something",
+    "kind": "custom",
+    "section": "01 · THE AGENT",
+    "notes": "This answers 'what is a skill file vs a system prompt vs a guide'. System prompt: the app's own instructions, every turn. AGENTS.md / CLAUDE.md: repo conventions, loaded at session start. Skill: a folder with SKILL.md (and optional scripts). Only the name and description sit in the window until the agent decides it needs the body: progressive disclosure. MCP server instructions: how to use the vendor's tools. Guide: what the data means, stored in MotherDuck. The first four live with one person, one repo or one app. The guide lives with the data, so every agent with access can read it. That is chapter 2.",
+    "theme": "sand"
+  },
+  {
+    "id": "skill",
+    "title": "A skill is procedure. A guide is meaning.",
+    "kind": "code",
+    "section": "01 · THE AGENT",
+    "codeLabel": "MARKDOWN / .claude/skills/cafe-analytics/SKILL.md",
+    "language": "md",
+    "code": "---\nname: cafe-analytics\ndescription: Answer questions about Juniper Counter cafe data in MotherDuck.\n---\n\n# Cafe analytics\n\n1. Call get_query_guide before writing any SQL.\n2. Keep money in cents until the final SELECT.\n3. Show the SQL you ran under every answer.\n4. Never use query_rw.",
+    "notes": "A skill tells the agent how to work. It is portable, it can ship scripts, and it costs almost nothing in the window until it is used. Step 1 points to the guide, which holds what the data means. Skill plus guide is the smallest useful context layer. Look at rule 4: it is a rule in text. Chapter 5 shows why that is the weakest place to put it.",
+    "theme": "sand"
+  },
+  {
+    "id": "harness",
+    "title": "The harness: everything around the loop",
+    "kind": "custom",
+    "section": "01 · THE AGENT",
+    "notes": "Same model, different harness, different agent. Claude Code's harness gives permissions (allow, ask, deny), hooks (PreToolUse, PostToolUse...), a sandbox, memory files, automatic compaction and subagents. The generator in chapter 3 is a much smaller harness: a tool list, a step cap, a read-only switch, a trace.",
+    "theme": "sand"
+  },
+  {
+    "id": "hook",
+    "title": "A hook: code that can say no",
+    "kind": "code",
+    "section": "01 · THE AGENT",
+    "codeLabel": "PYTHON / .claude/hooks/guard.py · PreToolUse",
+    "language": "loop",
+    "code": "# runs before every tool call, with the call as JSON on stdin\nif is_cloud_delete(call) and not teardown_unlocked():\n    print(\"Cloud deletes are locked. Ask the human.\", file=sys.stderr)\n    exit(2)      # 2 = block the call, and the model reads why",
+    "notes": "Simplified from the guard hook in parked/duckoffee (tested). In Claude Code, a PreToolUse hook that exits with code 2 blocks the tool call and its stderr goes back to the model. The model cannot talk its way past it. This is a harness rule. Chapter 5 adds the strongest layer, the database.",
+    "theme": "sand"
+  },
+  {
+    "id": "full-agent",
+    "title": "What makes a full agent",
+    "kind": "custom",
+    "section": "01 · THE AGENT",
+    "notes": "Click a line to jump to its chapter. Most demos stop at line 1: a model with a SQL tool. Each later line is something teams ask before they let an agent near real data, and each one maps to a chapter and a MotherDuck feature.",
+    "theme": "sand"
+  },
+  {
+    "id": "agent-mode",
+    "title": "DuckDB 2.0 talks to agents",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "01 · THE AGENT · MOTHERDUCK FEATURE",
+    "source": "https://duckdb.org/2026/10/09/agent-mode",
+    "sourceLabel": "DUCKDB.ORG · AGENT MODE IN THE CLI",
+    "notes": "The 2.0 CLI detects when an agent runs it (Claude Code, Codex, Cursor, Gemini CLI, Copilot, or AI_AGENT set) and switches output. Flags: -agent forces it on, -no-agent off, DUCKDB_AGENT_MODE also works. In DuckDB's TPC-H test the agent read 123.6k to 50.8k tokens of DuckDB output (59% less), all 132 runs correct, slightly more turns. The two tables on the slide are illustrative, not captured output. Why local matters for agents: in-process, free, fast, nothing leaves the laptop, so it is the safest sandbox for an agent to explore. Open question: do MotherDuck clients support DuckDB 2.0 by the workshop date?"
+  },
+  {
+    "id": "hands-on-1",
+    "title": "Hands-on: ask the café",
+    "body": "Ask your agent: which weekdays lose the most money to waste?",
+    "kind": "code",
+    "theme": "sand",
+    "section": "01 · THE AGENT · HANDS-ON",
+    "codeLabel": "SQL / DUCKDB CLI",
+    "language": "sql",
+    "code": "-- Juniper Counter, a duckgen dataset on the public bucket (S tier)\nSET s3_region = 'us-east-1';\nSET VARIABLE cafe = 's3://us-prd-motherduck-open-datasets/duckgen/'\n    || 'cafe-juniper-decisions/20261025-a5155411-s-r1/tables/';\n\nFROM read_parquet(getvariable('cafe') || 'item_daily/*.parquet')\nLIMIT 5;",
+    "notes": "Tested: this path reads. S tier: 1,764 shops, 7.7M rows in item_daily, 2024-10-07 to 2026-10-06. Tables: shops, menu_items, item_daily, pilot_customer_daily, neighborhoods. Everyone opens Claude Code (or similar) and lets the agent explore with the DuckDB CLI. Anyone without a working terminal follows on the projector. Ask people to write down their number for the next chapter. duckgen itself is internal (Google sign-in), so we only show the public bucket path."
+  },
+  {
+    "id": "hands-on-1b",
+    "title": "Hands-on: open the harness",
+    "kind": "code",
+    "section": "01 · THE AGENT · HANDS-ON",
+    "codeLabel": "SHELL / CLAUDE CODE",
+    "language": "loop",
+    "code": "$ claude mcp add MotherDuck --transport http https://api.motherduck.com/mcp\n$ claude\n> /context      # what is in the window right now\n> /mcp          # sign in to MotherDuck, list its tools\n> /context      # tool definitions just grew\n> ask the cafe question again, through MotherDuck",
+    "notes": "Five minutes. Everyone sees the anatomy in their own harness: the system prompt, the tool definitions, memory files, and how much the MotherDuck tools add. Check /context and /mcp on the Claude Code version we use on the day. People without Claude Code watch the projector.",
+    "theme": "sand"
+  },
+  {
+    "id": "s02",
+    "title": "02 · Context",
+    "body": "Same data, same SQL skills, different answers.",
+    "kind": "title",
+    "theme": "duck",
+    "section": "02 · CONTEXT",
+    "notes": "0:25. Thirteen minutes for this chapter."
+  },
+  {
+    "id": "spread",
+    "title": "Same question. How many answers?",
+    "body": "Post your number. Then we compare.",
+    "kind": "statement",
+    "theme": "ink",
+    "section": "02 · CONTEXT",
+    "notes": "Collect numbers (shared sheet, chat, or the generator if it has a room view). Expect a spread. The traps are in the data: money is integer USD cents, Sunday rows exist with zero activity, pilot customer-days include zero visits, pilot visits are a separate sample and must not be added to shop revenue. The answer keys from duckgen give the right numbers. TODO: run the four questions with a bare agent before the workshop to confirm the spread is real."
+  },
+  {
+    "id": "guides-pull",
+    "title": "How a guide reaches the agent",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "02 · CONTEXT · MOTHERDUCK FEATURE",
+    "notes": "Read from mcp-server on origin/main. Nothing is injected into the agent's context. The agent has to ask, and the server points it there in four places: get_query_guide (its description says to call it before writing SQL), the query tool's description, list_tables and search_catalog (they return relatedGuides), and get_flight_guide / get_dive_guide (guides under the reserved flights and dives topics). Guides are SQL underneath (MD_CREATE_GUIDE, MD_LIST_GUIDES), so a custom app can load them into its system prompt instead. A guide under the flights topic is procedure: that answers 'can a guide be a harness?' for ingestion."
+  },
+  {
+    "id": "guide-md",
+    "title": "Hands-on: write the guide",
+    "body": "Then start a fresh session and ask the same question.",
+    "kind": "code",
+    "theme": "sand",
+    "section": "02 · CONTEXT · HANDS-ON",
+    "codeLabel": "MARKDOWN / A MOTHERDUCK GUIDE",
+    "language": "md",
+    "code": "# Juniper Counter: how we count\n\n- Money columns are integer USD cents. Divide by 100.\n- Shops are closed on Sundays. Sunday rows exist with zero activity.\n- The loyalty pilot is a separate sample. Never add pilot visits to shop revenue.\n- Pilot customer-days include zero visits. Keep them when averaging.\n- Contribution excludes rent and salaried labor.",
+    "notes": "Draft content taken from the duckgen spec notes. Check every line against answer-keys.json before the workshop. Participants ask their agent to create it with create_guide, attached to the café database so list_tables surfaces it. Do not use duckgen's guide.md as is: it contains the answer SQL and the planted stories. Grade the second answer against the answer keys. Look at the trace: did the agent call get_query_guide?"
+  },
+  {
+    "id": "s03",
+    "title": "03 · Interface",
+    "body": "Where your users meet the agent.",
+    "kind": "title",
+    "theme": "duck",
+    "section": "03 · INTERFACE",
+    "notes": "0:38. Twelve minutes for this chapter."
+  },
+  {
+    "id": "knobs",
+    "title": "Build your agent",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "03 · INTERFACE · THE GENERATOR",
+    "notes": "The generator is one hosted app (built from /try patterns). Each knob is one component of an analytics agent. Next to the editor: a preview chat with a trace panel that shows every turn of the loop. Test the three context modes on the same question and compare against the answer keys. Then deploy: the agent gets a unique link. Nothing to install, nothing to deploy on their side."
+  },
+  {
+    "id": "hands-on-3",
+    "title": "Hands-on: get your link",
+    "body": "Pick your knobs, test in the preview, deploy, share the link with your neighbor.",
+    "kind": "statement",
+    "theme": "sand",
+    "section": "03 · INTERFACE · HANDS-ON",
+    "notes": "Paste the temporary key once. It is stored encrypted on the server, never in the URL or the browser. Links expire after 7 days and the keys are revoked after the workshop. Keep the link for chapter 5."
+  },
+  {
+    "id": "s04",
+    "title": "04 · Isolation",
+    "body": "Agents are bursty. They loop on queries.",
+    "kind": "title",
+    "theme": "duck",
+    "section": "04 · ISOLATION",
+    "notes": "0:50. Six minutes, mostly demo."
+  },
+  {
+    "id": "hypertenancy",
+    "title": "One Duckling per agent",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "04 · ISOLATION · MOTHERDUCK FEATURE",
+    "source": "https://motherduck.com/docs/concepts/hypertenancy",
+    "sourceLabel": "MOTHERDUCK DOCS · HYPERTENANCY",
+    "notes": "Hypertenancy: every user, service account or agent gets its own Duckling. Your deployed agent already has one: on deploy, the generator created a service account for it. Clean cost attribution per agent, and revoking one token stops one agent. Read scaling serves many end users through one service account with read-only Ducklings. Demo: an agent hammers heavy queries on its own account while a dashboard on another account keeps its speed. TODO: script the demo."
+  },
+  {
+    "id": "s05",
+    "title": "05 · Access",
+    "body": "What the agent can see, and what it can break.",
+    "kind": "title",
+    "theme": "duck",
+    "section": "05 · ACCESS",
+    "notes": "0:56. Fourteen minutes. This is the chapter that gets the 'now I'm interested' reaction."
+  },
+  {
+    "id": "fears",
+    "title": "What stops teams from shipping AI on data",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "05 · ACCESS",
+    "notes": "Ask the room first: what would stop you from giving an agent access to your warehouse? Then map each fear to a control. Masking also limits what reaches the model provider: if the agent only sees masked values, that is all that can leave in a prompt."
+  },
+  {
+    "id": "rules",
+    "title": "Where to put a rule",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "05 · ACCESS",
+    "notes": "Four places, weakest to strongest. The message of the whole workshop: guides for correctness, the database for safety. People who hesitate want to hear that the fence does not depend on the model behaving."
+  },
+  {
+    "id": "secure-view",
+    "title": "Shop managers see their shop",
+    "kind": "code",
+    "theme": "sand",
+    "section": "05 · ACCESS · MOTHERDUCK FEATURE",
+    "codeLabel": "SQL / MOTHERDUCK SECURE VIEW",
+    "language": "sql",
+    "code": "CREATE SHARE cafe_shop_managers FROM cafe (ACCESS RESTRICTED)\nWITH SECURE VIEW REPLACES item_daily AS (\n    SELECT shop_id, business_date, item_id,\n           sold_units, revenue_cents      -- no cost or margin columns\n    FROM item_daily\n    WHERE shop_id IN (\n        SELECT shop_id FROM shop_access WHERE member = current_user\n    )\n);",
+    "source": "https://motherduck.com/docs/key-tasks/sharing-data/secure-views/",
+    "sourceLabel": "MOTHERDUCK DOCS · SECURE VIEWS",
+    "notes": "Draft, not run yet. Row filter by shop, cost columns left out (hidden columns do not exist for the consumer: SELECT food_cost_cents fails as missing). Service accounts have no email, so agents are matched with current_user. Secure views need Business or Enterprise (trials count): we run this in the devrel org and participants only query the share. Managing secure views with SQL needs DuckDB 1.5.6+, consumers need 1.5.5+ for every query shape. EXPLAIN hides the filter and copies of the share stay filtered."
+  },
+  {
+    "id": "redteam",
+    "title": "Hands-on: break your neighbor’s agent",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "05 · ACCESS · HANDS-ON",
+    "notes": "Everyone gets two links. Agent A has the rule in its system prompt. Agent B runs as a shop manager through the secure view. Try to get other shops' numbers or the cost columns out of each. A is likely to leak, B cannot. Then fix your own agent with the harness and identity knobs. Collect the best attacks for the wrap."
+  },
+  {
+    "id": "s06",
+    "title": "06 · Observability",
+    "body": "What did it do, and was it right?",
+    "kind": "title",
+    "theme": "duck",
+    "section": "06 · OBSERVABILITY",
+    "notes": "1:10. Eight minutes."
+  },
+  {
+    "id": "traces",
+    "title": "Every agent, one table",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "06 · OBSERVABILITY · MOTHERDUCK FEATURE",
+    "notes": "The generator writes every turn to MotherDuck, the way duckgen and /try already write to llm_obs. Show a live Dive over the whole room: how many steps per question, who called get_query_guide, who matched the answer key, which attacks got through. The answer keys are your evals."
+  },
+  {
+    "id": "humans",
+    "title": "What should humans still operate?",
+    "body": "Definitions, identities and the off switch. What else?",
+    "kind": "statement",
+    "theme": "ink",
+    "section": "WRAP",
+    "notes": "1:18. Open discussion and Q&A, then teardown: links expire, temporary keys are revoked, service accounts are deleted. Point to the repo for the prompts, the guide and the guardrails that worked."
+  },
+  {
+    "id": "thanks",
+    "title": "Thanks!",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "THANK YOU",
+    "notes": "Leave up during Q&A. TODO: QR code to the repo once it is published."
+  }
+]

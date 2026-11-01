@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "enabledMcpjsonServers": ["motherduck"],
+  "permissions": {
+    "allow": [
+      "Bash(duckdb:*)",
+      "Bash(uv run:*)",
+      "Bash(make build:*)",
+      "Bash(make check:*)",
+      "Bash(make test:*)",
+      "Bash(make trace:*)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(file:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "mcp__motherduck__query",
+      "mcp__motherduck__list_databases",
+      "mcp__motherduck__list_tables",
+      "mcp__motherduck__list_columns",
+      "mcp__motherduck__list_views",
+      "mcp__motherduck__search_catalog",
+      "mcp__motherduck__ask_docs_question",
+      "mcp__motherduck__get_query_guide",
+      "mcp__motherduck__get_dive_guide",
+      "mcp__motherduck__get_flight_guide",
+      "mcp__motherduck__list_flights",
+      "mcp__motherduck__list_flight_runs",
+      "mcp__motherduck__get_flight_logs",
+      "mcp__motherduck__list_dives",
+      "mcp__motherduck__list_shares"
+    ],
+    "deny": [
+      "Read(./facilitator/**)",
+      "Read(./tools/check.py)",
+      "Read(./tools/deliver.py)",
+      "Edit(./data/raw/**)",
+      "Write(./data/raw/**)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          { "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard.py\"" },
+          { "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/trace.py\"" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [{ "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/trace.py\"" }]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [{ "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/trace.py\"" }]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [{ "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/trace.py\"" }]
+      }
+    ]
+  }
+}

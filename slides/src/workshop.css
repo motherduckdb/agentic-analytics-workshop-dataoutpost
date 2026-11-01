@@ -1,0 +1,505 @@
+/* Workshop visuals, on top of deck.css (copied unchanged from the Jev for analytics deck). */
+
+.ws-slide > .ws-visual {
+  margin-block: auto;
+}
+.ws-visual h2 {
+  font:
+    40px AeonikMono,
+    monospace;
+  margin: 14px 0 10px;
+}
+.ws-visual code {
+  font:
+    19px AeonikMono,
+    monospace;
+  background: #fff;
+  border: 1px solid #38383840;
+  padding: 4px 10px;
+}
+.ws-small {
+  font-size: 19px;
+  color: #666;
+}
+.ws-caption {
+  font-size: 24px;
+  margin: 26px 0 0;
+  text-align: center;
+}
+
+/* Cover and thanks */
+.hero-slide .eyebrow,
+.ws-slide.custom:has(.ws-hero) .eyebrow {
+  display: none;
+}
+.ws-hero {
+  width: 1390px;
+  height: 660px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+}
+.ws-hero h2 {
+  font:
+    normal 110px/1.02 AeonikMono,
+    monospace;
+  letter-spacing: -3px;
+  margin: 26px 0 30px;
+}
+.ws-hero p {
+  font-size: 30px;
+  margin: 0 0 14px;
+  max-width: 820px;
+}
+.ws-hero .ws-names {
+  font:
+    24px AeonikMono,
+    monospace;
+  color: #087f72;
+  margin-top: 30px;
+}
+.ws-hero img {
+  height: 520px;
+  max-width: 460px;
+  object-fit: contain;
+}
+
+/* Agenda: 3 x 2 clickable chapters */
+.ws-agenda {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+.ws-agenda button {
+  position: relative;
+  text-align: left;
+  height: 250px;
+  padding: 24px 30px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid #38383840;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.ws-agenda button:hover {
+  background: #fff4ae;
+}
+.ws-agenda .agenda-number {
+  font-size: 56px;
+  line-height: 1;
+}
+.ws-agenda .concept-icon {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  width: 64px;
+  height: 64px;
+}
+.ws-agenda h2 {
+  font-size: 38px;
+  margin: 26px 0 8px;
+}
+.ws-agenda p {
+  font-family: Inter, Arial, sans-serif;
+  font-size: 21px;
+  color: #666;
+  margin: 0;
+}
+
+/* Boxes and arrows */
+.ws-node {
+  background: #fff;
+  border: 2px solid var(--ink);
+  box-shadow: -9px 9px 0 var(--ink);
+  padding: 22px 26px;
+}
+.ws-node p {
+  font-size: 24px;
+  margin: 8px 0 0;
+}
+.ws-node.ws-strong {
+  background: var(--sun);
+}
+.ws-node.ws-soft {
+  background: transparent;
+  box-shadow: none;
+  border-style: dashed;
+}
+.ws-arrow {
+  font:
+    54px AeonikMono,
+    monospace;
+}
+
+/* The loop */
+.ws-loop {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: 1fr auto 1.2fr auto 1fr;
+  align-items: center;
+  gap: 28px;
+}
+.ws-cycle {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ws-cycle-arrows {
+  display: flex;
+  justify-content: space-around;
+  font:
+    20px AeonikMono,
+    monospace;
+  color: #087f72;
+}
+.ws-loop-around {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 46px;
+  font:
+    20px AeonikMono,
+    monospace;
+  letter-spacing: 1px;
+}
+.ws-loop-around span {
+  border-top: 2px solid var(--ink);
+  padding-top: 12px;
+}
+
+/* DuckDB agent mode */
+.ws-mode {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 40px;
+  align-items: start;
+}
+.ws-term pre {
+  background: #fff;
+  border: 2px solid var(--ink);
+  box-shadow: -9px 9px 0 var(--ink);
+  margin-top: 14px;
+  /* AeonikMono has no box-drawing glyphs, so the terminal mocks use a system mono. */
+  font:
+    20px/1.3 Menlo,
+    'DejaVu Sans Mono',
+    monospace;
+}
+.ws-term ul {
+  font-size: 22px;
+  margin: 22px 0 0;
+  padding-left: 26px;
+}
+.ws-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 40px;
+}
+.ws-stat strong {
+  font:
+    120px/1 AeonikMono,
+    monospace;
+  color: #087f72;
+}
+.ws-stat span {
+  font-size: 22px;
+}
+
+/* Guides */
+.ws-guides {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 60px;
+  align-items: center;
+}
+.ws-guide-card .concept-icon {
+  width: 72px;
+  height: 72px;
+  display: block;
+  margin-bottom: 10px;
+}
+.ws-doors {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.ws-door {
+  display: grid;
+  grid-template-columns: 430px 1fr;
+  gap: 20px;
+  align-items: center;
+  border-top: 1px solid #38383840;
+  padding-top: 16px;
+  font-size: 22px;
+}
+.ws-door code {
+  justify-self: start;
+}
+
+/* Tables */
+.ws-table {
+  width: 1390px;
+  border-collapse: collapse;
+  font-size: 23px;
+  background: #fff;
+  border: 2px solid var(--ink);
+  box-shadow: -9px 9px 0 var(--ink);
+}
+.ws-table th {
+  text-align: left;
+  font:
+    17px AeonikMono,
+    monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: #e9e2d8;
+  border-bottom: 2px solid var(--ink);
+  padding: 12px 20px;
+}
+.ws-table td {
+  padding: 12px 20px;
+  border-bottom: 1px solid #38383825;
+}
+.ws-table td:first-child {
+  font-weight: 600;
+}
+
+/* Hypertenancy */
+.ws-ducklings {
+  width: 1390px;
+}
+.ws-duckling-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 34px;
+}
+.ws-duckling {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ws-duckling strong {
+  font:
+    32px AeonikMono,
+    monospace;
+}
+.ws-duckling .ws-node {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 22px;
+  margin-top: 10px;
+}
+.ws-duckling .concept-icon {
+  width: 56px;
+  height: 56px;
+}
+.ws-storage {
+  margin-top: 40px;
+  padding: 18px;
+  text-align: center;
+  background: var(--ink);
+  color: var(--sand);
+  font:
+    20px AeonikMono,
+    monospace;
+  letter-spacing: 2px;
+}
+
+/* Four places to put a rule */
+.ws-rules {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+.ws-rule {
+  border-top: 4px solid var(--ink);
+  padding-top: 14px;
+}
+.ws-rule:last-child {
+  border-top-color: #087f72;
+}
+.ws-rule .agenda-number {
+  font-size: 44px;
+}
+.ws-rule p {
+  font-size: 22px;
+  margin: 0;
+}
+
+/* Red team */
+.ws-redteam {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+.ws-redteam h2 {
+  font-size: 34px;
+}
+.ws-redteam code {
+  display: block;
+  line-height: 1.45;
+  padding: 8px 12px;
+}
+.ws-attacks p {
+  font-size: 24px;
+  border-left: 4px solid var(--coral);
+  padding-left: 16px;
+  margin: 16px 0;
+}
+
+/* Chapter 1: anatomy of an agent */
+.ws-span {
+  grid-column: 1 / -1;
+}
+.ws-table-tight {
+  font-size: 21px;
+}
+.ws-table-tight td {
+  padding: 10px 18px;
+}
+.ws-row-strong td {
+  background: var(--sun);
+}
+
+.ws-spectrum {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  align-items: stretch;
+}
+.ws-spectrum h2 {
+  font-size: 40px;
+}
+
+.ws-window {
+  width: 1390px;
+}
+.ws-window-bar {
+  display: flex;
+  height: 170px;
+  border: 2px solid var(--ink);
+  box-shadow: -9px 9px 0 var(--ink);
+}
+.ws-window-bar > div {
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+  border-right: 2px solid var(--ink);
+  font:
+    17px/1.2 AeonikMono,
+    monospace;
+  min-width: 0;
+}
+.ws-window-bar > div:last-child {
+  border-right: 0;
+}
+.ws-window-notes {
+  margin-top: 44px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 50px;
+  font-size: 24px;
+}
+.ws-window-notes p {
+  margin: 0;
+}
+.ws-window-notes .ws-small {
+  grid-column: 1 / -1;
+}
+
+.ws-mcp {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: 300px 200px 1fr;
+  gap: 30px;
+  align-items: center;
+}
+.ws-mcp-clients {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ws-chip {
+  border: 2px solid var(--ink);
+  background: #fff;
+  padding: 10px 16px;
+  font:
+    21px AeonikMono,
+    monospace;
+}
+.ws-mcp-wire {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font:
+    18px AeonikMono,
+    monospace;
+  color: #087f72;
+}
+.ws-mcp-server .ws-door {
+  grid-template-columns: 140px 1fr;
+}
+.ws-mcp-server .ws-door strong {
+  font:
+    22px AeonikMono,
+    monospace;
+}
+
+.ws-harness {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 34px 40px;
+}
+.ws-harness h2 {
+  font-size: 32px;
+}
+
+.ws-full {
+  width: 1390px;
+  display: flex;
+  flex-direction: column;
+}
+.ws-full button {
+  display: grid;
+  grid-template-columns: 90px 1fr 260px;
+  align-items: center;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid #38383840;
+  padding: 14px 10px;
+  font:
+    30px Inter,
+    Arial,
+    sans-serif;
+  cursor: pointer;
+}
+.ws-full button:hover {
+  background: #fff4ae;
+}
+.ws-full .agenda-number {
+  font-size: 34px;
+}
+.ws-full em {
+  font:
+    normal 20px AeonikMono,
+    monospace;
+  color: #666;
+  text-align: right;
+}
