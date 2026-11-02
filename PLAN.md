@@ -72,23 +72,56 @@ change; a proposed version is at the end of this file.
 
 ## Agenda (90 minutes)
 
-| Time | Chapter | Fundamental | MotherDuck feature | Hands-on |
-|---|---|---|---|---|
-| 0:00 | Intro | | | Hand out keys, open the generator |
-| 0:05 | 01 The agent | A model in a loop, with tools, context and a harness around it | DuckDB 2.0 agent mode locally, MotherDuck MCP in the cloud | DuckDB CLI on the café Parquet, then `/context` and `/mcp` in Claude Code to see the anatomy |
-| 0:25 | 02 Context | Text to SQL is solved, business meaning is not | Guides (`get_query_guide`, `relatedGuides`) | Post answers to the room, write a guide, ask again, grade against the answer keys |
-| 0:38 | 03 Interface | Where users meet the agent | The generator link, Dives | Build your agent, test the context modes, get your link |
-| 0:50 | 04 Isolation | Agents are bursty and loop on queries | Hypertenancy, one service account per agent, read scaling | Demo: each deployed agent has its own Duckling. Noisy neighbor demo |
-| 0:56 | 05 Access | What the agent can see and do | Read-only tokens, shares, secure views (row filters, hidden and masked columns) | Red team: prompt-only rule vs secure view |
-| 1:10 | 06 Observability | What did it do, and was it right? | Traces stored in MotherDuck, a Dive over them, answer keys as evals | Dive over the whole room's traces |
-| 1:18 | Wrap | What should humans still operate? | | Discussion, teardown, Q&A |
+Two ideas first (what an agent is, what an analytics agent has to do), then four levels. At each
+level one more part of the agent becomes the participant's own. Every level ends with a hands-on.
 
-The terminal is only needed in chapter 1. Anyone whose setup breaks follows chapter 1 on the
-projector and does everything after it in the browser. Role split between Mehdi and Jacob: to decide.
+| Time | Part | What becomes yours | MotherDuck / DuckDB features | Hands-on |
+|---|---|---|---|---|
+| 0:00 | Intro | | duckgen API | 0. Draw your company: a duckgen dataset and one question |
+| 0:06 | 01 The agent | | | Talk only. Sourced definitions, loop, anatomy, levels map |
+| 0:18 | 02 The analytics job | | Flights, Dives, Guides, storage, MCP apps | Guess slides |
+| 0:26 | Level 1 · Local | a skill file, data on your laptop | DuckDB 2.0 agent mode | 1. Load your Parquet from S3 into local DuckDB, transform, answer, local HTML dashboard |
+| 0:40 | Level 2 · MotherDuck | data and compute in MotherDuck, anyone can query | remote MCP, Guides, Dives, Flights, Ducklings, shares, secure views | 2. Remote MCP, attach the share, write a guide, save a Dive, stretch: a Flight |
+| 1:00 | Level 3 · Your tools | the tool surface | white-label MCP pattern | 3. FastMCP proxy: forward 3 tools, rename, add a domain tool, log the question |
+| 1:12 | Level 4 · Your agent | the loop and the model | the generator, traces in MotherDuck | 4. Generator: pick model and tools, deploy a link, red team the neighbor, traces Dive |
+| 1:24 | Wrap | | | Recap, discussion, references |
+
+Between level 1 and level 2, two slides adapted from the self-hosting DuckDB talk: the boxes you
+build to let anyone query (storage, compute, identity, access, context, pipelines, apps,
+observability), then the same boxes run by MotherDuck.
+
+| Level | Harness | Model | Tools | Data + compute | Who can use it |
+|---|---|---|---|---|---|
+| 1 Local | Claude Code (or opencode + workshop key) | managed | DuckDB CLI + skill | laptop | you |
+| 2 MotherDuck | managed | managed | MotherDuck remote MCP + skill | MotherDuck | anyone you share with |
+| 3 Your tools | managed | managed | your MCP server in front of MotherDuck's | MotherDuck | your users |
+| 4 Your agent | your loop | any model, workshop OpenRouter key | your tools | MotherDuck | anyone with the link |
+
+The six fundamentals from the previous plan are covered inside the levels: pipelines and storage in
+level 1, context, data apps and access in level 2 (sharing is what makes them necessary),
+observability in levels 3 and 4.
+
+### Exercises from the duckgen API
+
+`https://motherduck.com/duckgen/api/v1` is public, read-only, no auth. `/datasets/` lists 19
+fictional companies (all `ready`, none `endorsed` on 2026-11-02), each with S3 Parquet
+(`tiers[].s3.prefix`, for level 1) and a MotherDuck share (`tiers[].motherduck.attach`, for level
+2). `/prompts/?slug=…&tier=s` returns questions with an `answerKey` pointer for grading. Each
+participant draws a company and a question. The café stays the shared demo on the projector, so
+the "same question, how many answers" comparison still works.
+
+Rule: the agent never sees the answer key URL or the dataset `guide.md`. The guide contains the
+answers. The grader fetches the key on its side.
+
+### Where things live
+
+The deck source moved to the mehdio-website repo (`src/talks/no-ui-data-stack/`, output at
+`/talks/next-data-stack-has-no-ui`, PR #38 for previews). `slides/` in this repo is the older copy
+and is no longer edited.
 
 ## Chapter 1 in detail: what an agent is
 
-Chapter 1 is the longest (20 minutes: about 11 of talk, 9 of hands-on) because it builds the
+Chapter 1 takes 16 minutes (about 9 of talk, 7 of hands-on) because it builds the
 vocabulary the rest of the workshop uses. Slide order: chatbot vs workflow vs agent, the loop, the
 loop in pseudo code, the parts of an agent, the context window, MCP, the five places to put
 instructions, a skill example, the harness, a hook example, what makes a full agent, DuckDB agent
@@ -153,6 +186,35 @@ add the MotherDuck MCP (`claude mcp add MotherDuck --transport http
 https://api.motherduck.com/mcp`), `/mcp` to sign in, `/context` again to see the tool definitions
 grow, and ask the café question through MotherDuck. Check `/context` and `/mcp` on the Claude Code
 version used on the day.
+
+## Chapter 2 in detail: the analytics job and "no UI"
+
+This chapter keeps the workshop about analytics, and it carries the title's thesis. Guess slides:
+the room answers first, then the presenter presses R (or clicks REVEAL).
+
+**Six tasks of an analytics agent, mapped to MotherDuck.**
+
+| Task | What it covers | MotherDuck feature |
+|---|---|---|
+| Pipelines | Ingest and transform, on a schedule | Flights (Python runs on MotherDuck, scheduled or on demand; free plan is on demand only) |
+| Data apps | Dashboards, charts, small tools | Dives |
+| Context | What the data means | Guides |
+| Storage | Where the data lives | MotherDuck databases, fully managed DuckLake, local DuckDB |
+| Permissions & sandbox | What it can see, touch and break | Per-agent Ducklings, service accounts, read-only tokens, shares with secure views. Each Flight run gets its own isolated runtime |
+| Observability | Covers all five | Flight Explainer, query history, traces stored in MotherDuck |
+
+**The next data stack has no UI.** Each layer of the modern data stack ships two UIs: one to build
+(connector screens, model editors, DAG editors, dashboard editors) and one to watch (sync status,
+run history, dashboards, lineage). When an agent builds, the build UIs collapse into chat: in data,
+describing the connector, the SQL, the schedule or the chart is enough. Some domains still need a
+custom builder (video editing, visual design). The watch UIs stay, and three matter: dashboards,
+pipeline runs (DAG style) and agent traces.
+
+**MotherDuck's answer: chat to build, MCP apps to watch.** The MotherDuck MCP server ships MCP apps,
+UIs rendered inside the chat client: the Dive viewer (`view_dive`) and the Flight Explainer run
+viewer (`view_flight_run`, opened from `run_flight`, enabled for everyone in prod per the mono
+history). Agent traces have no dedicated app: we store them in MotherDuck and read them with a Dive
+(chapter 6). Demo idea: run a Flight from chat, watch it in the Flight Explainer, then open a Dive.
 
 ## The dataset: duckgen café
 
@@ -322,6 +384,7 @@ the secure view. Participants attack both.
 - [ ] Traces table and the Dive over it.
 - [ ] Replace the pseudo code on slide 6 with the real loop once the generator code exists.
 - [ ] Exercise notes per chapter.
+- [ ] Demo for chapter 2: a small café ingestion Flight run from chat, shown in the Flight Explainer.
 - [ ] Full dry run with timings.
 - [ ] Update the abstract.
 

@@ -1,0 +1,1 @@
+{"mcpServers":{"motherduck":{"type":"http","url":"https://api.motherduck.com/mcp","headers":{"Authorization":"Bearer ${MOTHERDUCK_TOKEN}"}}}}

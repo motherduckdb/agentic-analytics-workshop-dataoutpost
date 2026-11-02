@@ -5,7 +5,7 @@
     "kind": "custom",
     "theme": "sand",
     "section": "MOTHERDUCK WORKSHOP",
-    "notes": "DRAFT DECK. 90 minutes, six chapters, each mapped to a MotherDuck feature with a short hands-on. Timing: intro 0:00, the agent 0:05, context 0:25, interface 0:38, isolation 0:50, access 0:56, observability 1:10, wrap 1:18. Before we start: hand out the temporary AI keys and the generator URL. Mehdi drives slides, Jacob walks the room during hands-on (split to confirm)."
+    "notes": "DRAFT DECK. 90 minutes. Timing: intro 0:00, the agent 0:04, the analytics job 0:20, context 0:32, data apps 0:44, permissions and sandbox 0:56, observability 1:12, wrap 1:20. Guess slides: let the room answer, then press R to reveal. Hand out the temporary AI keys and the generator URL first."
   },
   {
     "id": "agenda",
@@ -13,7 +13,7 @@
     "kind": "custom",
     "theme": "sand",
     "section": "00 · TODAY",
-    "notes": "Click a chapter to jump. Chapter 1 is the longest: it builds the vocabulary (loop, tools, context, harness, MCP, skills) the rest of the workshop uses. Then the pattern repeats: the fundamental in about 4 minutes, the MotherDuck feature that answers it, a short hands-on. The terminal is only needed in chapter 1. From chapter 2 on, everything runs in the browser."
+    "notes": "Click a chapter to jump. Chapters 1 and 2 set up the vocabulary and the analytics breakdown: the rest maps one task each to MotherDuck. Then the pattern repeats: the fundamental in about 4 minutes, the MotherDuck feature that answers it, a short hands-on. The terminal is only needed in chapter 1. From chapter 2 on, everything runs in the browser."
   },
   {
     "id": "solved",
@@ -31,7 +31,7 @@
     "kind": "title",
     "theme": "duck",
     "section": "01 · THE AGENT",
-    "notes": "0:05. Twenty minutes: about 11 of talk, 9 of hands-on. The goal is shared vocabulary. By the end, everyone can name the parts of any agent they meet."
+    "notes": "0:04. Sixteen minutes: about 9 of talk, 7 of hands-on. Shared vocabulary for the rest of the workshop."
   },
   {
     "id": "spectrum",
@@ -168,13 +168,54 @@
     "theme": "sand"
   },
   {
+    "id": "s-job",
+    "title": "02 · The analytics job",
+    "body": "Text to SQL is one task. An analytics agent has six.",
+    "kind": "title",
+    "theme": "duck",
+    "section": "02 · THE ANALYTICS JOB",
+    "notes": "0:20. Twelve minutes. Turn the generic agent into a data agent: break the job down, then look at which UIs it removes."
+  },
+  {
+    "id": "analytics-tasks",
+    "title": "Six tasks. Guess the MotherDuck feature.",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "02 · THE ANALYTICS JOB · GUESS",
+    "notes": "Ask the room to shout a guess for each box before pressing R. Pipelines (ingest, transform, schedule): Flights, Python runs on MotherDuck, scheduled or on demand (free plan: on demand only). Data apps: Dives, interactive React apps over live data, saved in MotherDuck. Context: Guides (chapter 3). Storage: MotherDuck databases, fully managed DuckLake, and local DuckDB for the laptop part. Permissions and sandbox: per-agent Ducklings, service accounts, read-only tokens, shares with secure views (chapter 5); each Flight run also gets its own isolated runtime. Observability covers all five: Flight Explainer (the run viewer MCP app), query history, and traces we store ourselves (chapter 6)."
+  },
+  {
+    "id": "stack-ui",
+    "title": "The modern data stack is a pile of UIs",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "02 · THE ANALYTICS JOB · THE NEXT DATA STACK HAS NO UI",
+    "notes": "This is the title of the workshop. Each tool in the modern data stack ships a UI to build things (connectors, models, schedules, dashboards) and a UI to watch them run. Ask: how many browser tabs do you open to ship one metric?"
+  },
+  {
+    "id": "ui-guess",
+    "title": "When an agent builds, which UIs survive?",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "02 · THE ANALYTICS JOB · GUESS",
+    "notes": "Let people guess before R. Building moves to chat: in data, describing the connector, the SQL, the schedule or the chart is enough, the agent writes it. Some domains still need a custom builder UI (video editing, visual design). Watching does not go away: people still need dashboards, a view of pipeline runs, and a view of what agents did."
+  },
+  {
+    "id": "mcp-apps",
+    "title": "Chat to build. MCP apps to watch.",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "02 · THE ANALYTICS JOB · MOTHERDUCK FEATURE",
+    "notes": "MotherDuck's MCP server ships MCP apps, UIs rendered inside the chat client: the Dive viewer (view_dive) and the Flight Explainer run viewer (view_flight_run, opened from run_flight, enabled for everyone in prod). For agent traces there is no dedicated app: we store traces in MotherDuck and look at them with a Dive (chapter 6). Demo: run a Flight from chat and watch it in the Flight Explainer, then open a Dive."
+  },
+  {
     "id": "s02",
-    "title": "02 · Context",
+    "title": "03 · Context",
     "body": "Same data, same SQL skills, different answers.",
     "kind": "title",
     "theme": "duck",
-    "section": "02 · CONTEXT",
-    "notes": "0:25. Thirteen minutes for this chapter."
+    "section": "03 · CONTEXT",
+    "notes": "0:32. Twelve minutes."
   },
   {
     "id": "spread",
@@ -182,7 +223,7 @@
     "body": "Post your number. Then we compare.",
     "kind": "statement",
     "theme": "ink",
-    "section": "02 · CONTEXT",
+    "section": "03 · CONTEXT",
     "notes": "Collect numbers (shared sheet, chat, or the generator if it has a room view). Expect a spread. The traps are in the data: money is integer USD cents, Sunday rows exist with zero activity, pilot customer-days include zero visits, pilot visits are a separate sample and must not be added to shop revenue. The answer keys from duckgen give the right numbers. TODO: run the four questions with a bare agent before the workshop to confirm the spread is real."
   },
   {
@@ -190,7 +231,7 @@
     "title": "How a guide reaches the agent",
     "kind": "custom",
     "theme": "sand",
-    "section": "02 · CONTEXT · MOTHERDUCK FEATURE",
+    "section": "03 · CONTEXT · MOTHERDUCK FEATURE",
     "notes": "Read from mcp-server on origin/main. Nothing is injected into the agent's context. The agent has to ask, and the server points it there in four places: get_query_guide (its description says to call it before writing SQL), the query tool's description, list_tables and search_catalog (they return relatedGuides), and get_flight_guide / get_dive_guide (guides under the reserved flights and dives topics). Guides are SQL underneath (MD_CREATE_GUIDE, MD_LIST_GUIDES), so a custom app can load them into its system prompt instead. A guide under the flights topic is procedure: that answers 'can a guide be a harness?' for ingestion."
   },
   {
@@ -199,7 +240,7 @@
     "body": "Then start a fresh session and ask the same question.",
     "kind": "code",
     "theme": "sand",
-    "section": "02 · CONTEXT · HANDS-ON",
+    "section": "03 · CONTEXT · HANDS-ON",
     "codeLabel": "MARKDOWN / A MOTHERDUCK GUIDE",
     "language": "md",
     "code": "# Juniper Counter: how we count\n\n- Money columns are integer USD cents. Divide by 100.\n- Shops are closed on Sundays. Sunday rows exist with zero activity.\n- The loyalty pilot is a separate sample. Never add pilot visits to shop revenue.\n- Pilot customer-days include zero visits. Keep them when averaging.\n- Contribution excludes rent and salaried labor.",
@@ -207,19 +248,19 @@
   },
   {
     "id": "s03",
-    "title": "03 · Interface",
-    "body": "Where your users meet the agent.",
+    "title": "04 · Data apps",
+    "body": "Where people meet the data, and the agent.",
     "kind": "title",
     "theme": "duck",
-    "section": "03 · INTERFACE",
-    "notes": "0:38. Twelve minutes for this chapter."
+    "section": "04 · DATA APPS",
+    "notes": "0:44. Twelve minutes. The generator is our data app: a chat page with a link."
   },
   {
     "id": "knobs",
     "title": "Build your agent",
     "kind": "custom",
     "theme": "sand",
-    "section": "03 · INTERFACE · THE GENERATOR",
+    "section": "04 · DATA APPS · THE GENERATOR",
     "notes": "The generator is one hosted app (built from /try patterns). Each knob is one component of an analytics agent. Next to the editor: a preview chat with a trace panel that shows every turn of the loop. Test the three context modes on the same question and compare against the answer keys. Then deploy: the agent gets a unique link. Nothing to install, nothing to deploy on their side."
   },
   {
@@ -228,43 +269,34 @@
     "body": "Pick your knobs, test in the preview, deploy, share the link with your neighbor.",
     "kind": "statement",
     "theme": "sand",
-    "section": "03 · INTERFACE · HANDS-ON",
+    "section": "04 · DATA APPS · HANDS-ON",
     "notes": "Paste the temporary key once. It is stored encrypted on the server, never in the URL or the browser. Links expire after 7 days and the keys are revoked after the workshop. Keep the link for chapter 5."
   },
   {
-    "id": "s04",
-    "title": "04 · Isolation",
-    "body": "Agents are bursty. They loop on queries.",
+    "id": "s05",
+    "title": "05 · Permissions & sandbox",
+    "body": "What the agent can see, touch and break.",
     "kind": "title",
     "theme": "duck",
-    "section": "04 · ISOLATION",
-    "notes": "0:50. Six minutes, mostly demo."
+    "section": "05 · PERMISSIONS & SANDBOX",
+    "notes": "0:56. Sixteen minutes, isolation first (hypertenancy demo), then access and the red team. This is the chapter that gets the 'now I'm interested' reaction."
   },
   {
     "id": "hypertenancy",
     "title": "One Duckling per agent",
     "kind": "custom",
     "theme": "sand",
-    "section": "04 · ISOLATION · MOTHERDUCK FEATURE",
+    "section": "05 · PERMISSIONS & SANDBOX · MOTHERDUCK FEATURE",
     "source": "https://motherduck.com/docs/concepts/hypertenancy",
     "sourceLabel": "MOTHERDUCK DOCS · HYPERTENANCY",
     "notes": "Hypertenancy: every user, service account or agent gets its own Duckling. Your deployed agent already has one: on deploy, the generator created a service account for it. Clean cost attribution per agent, and revoking one token stops one agent. Read scaling serves many end users through one service account with read-only Ducklings. Demo: an agent hammers heavy queries on its own account while a dashboard on another account keeps its speed. TODO: script the demo."
-  },
-  {
-    "id": "s05",
-    "title": "05 · Access",
-    "body": "What the agent can see, and what it can break.",
-    "kind": "title",
-    "theme": "duck",
-    "section": "05 · ACCESS",
-    "notes": "0:56. Fourteen minutes. This is the chapter that gets the 'now I'm interested' reaction."
   },
   {
     "id": "fears",
     "title": "What stops teams from shipping AI on data",
     "kind": "custom",
     "theme": "sand",
-    "section": "05 · ACCESS",
+    "section": "05 · PERMISSIONS & SANDBOX",
     "notes": "Ask the room first: what would stop you from giving an agent access to your warehouse? Then map each fear to a control. Masking also limits what reaches the model provider: if the agent only sees masked values, that is all that can leave in a prompt."
   },
   {
@@ -272,7 +304,7 @@
     "title": "Where to put a rule",
     "kind": "custom",
     "theme": "sand",
-    "section": "05 · ACCESS",
+    "section": "05 · PERMISSIONS & SANDBOX",
     "notes": "Four places, weakest to strongest. The message of the whole workshop: guides for correctness, the database for safety. People who hesitate want to hear that the fence does not depend on the model behaving."
   },
   {
@@ -280,7 +312,7 @@
     "title": "Shop managers see their shop",
     "kind": "code",
     "theme": "sand",
-    "section": "05 · ACCESS · MOTHERDUCK FEATURE",
+    "section": "05 · PERMISSIONS & SANDBOX · MOTHERDUCK FEATURE",
     "codeLabel": "SQL / MOTHERDUCK SECURE VIEW",
     "language": "sql",
     "code": "CREATE SHARE cafe_shop_managers FROM cafe (ACCESS RESTRICTED)\nWITH SECURE VIEW REPLACES item_daily AS (\n    SELECT shop_id, business_date, item_id,\n           sold_units, revenue_cents      -- no cost or margin columns\n    FROM item_daily\n    WHERE shop_id IN (\n        SELECT shop_id FROM shop_access WHERE member = current_user\n    )\n);",
@@ -293,7 +325,7 @@
     "title": "Hands-on: break your neighbor’s agent",
     "kind": "custom",
     "theme": "sand",
-    "section": "05 · ACCESS · HANDS-ON",
+    "section": "05 · PERMISSIONS & SANDBOX · HANDS-ON",
     "notes": "Everyone gets two links. Agent A has the rule in its system prompt. Agent B runs as a shop manager through the secure view. Try to get other shops' numbers or the cost columns out of each. A is likely to leak, B cannot. Then fix your own agent with the harness and identity knobs. Collect the best attacks for the wrap."
   },
   {
@@ -303,7 +335,7 @@
     "kind": "title",
     "theme": "duck",
     "section": "06 · OBSERVABILITY",
-    "notes": "1:10. Eight minutes."
+    "notes": "1:12. Eight minutes."
   },
   {
     "id": "traces",
@@ -311,7 +343,7 @@
     "kind": "custom",
     "theme": "sand",
     "section": "06 · OBSERVABILITY · MOTHERDUCK FEATURE",
-    "notes": "The generator writes every turn to MotherDuck, the way duckgen and /try already write to llm_obs. Show a live Dive over the whole room: how many steps per question, who called get_query_guide, who matched the answer key, which attacks got through. The answer keys are your evals."
+    "notes": "The Flight Explainer covers pipeline runs. For the agents, the generator writes every turn to a MotherDuck table (the way duckgen and /try write to llm_obs), and a Dive shows the whole room: steps per question, who called get_query_guide, who matched the answer key, which attacks got through. The answer keys are the evals."
   },
   {
     "id": "humans",
@@ -320,7 +352,7 @@
     "kind": "statement",
     "theme": "ink",
     "section": "WRAP",
-    "notes": "1:18. Open discussion and Q&A, then teardown: links expire, temporary keys are revoked, service accounts are deleted. Point to the repo for the prompts, the guide and the guardrails that worked."
+    "notes": "1:20. Open discussion and Q&A, then teardown: links expire, temporary keys are revoked, service accounts are deleted. Point to the repo for the prompts, the guide and the guardrails that worked."
   },
   {
     "id": "thanks",

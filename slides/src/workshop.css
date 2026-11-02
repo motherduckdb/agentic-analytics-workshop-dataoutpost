@@ -503,3 +503,85 @@
   color: #666;
   text-align: right;
 }
+
+/* Guess slides */
+.ws-guess {
+  display: inline-block;
+  font:
+    18px AeonikMono,
+    monospace;
+  color: #999;
+  border: 1px dashed #999;
+  padding: 2px 10px;
+}
+.ws-reveal {
+  position: absolute;
+  right: 105px;
+  top: 76px;
+}
+.ws-md {
+  font:
+    20px/1.35 AeonikMono,
+    monospace;
+  color: #087f72;
+  margin-top: 12px;
+}
+
+/* The analytics job */
+.ws-job {
+  width: 1390px;
+}
+.ws-job-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 22px;
+}
+.ws-job-row .ws-node {
+  padding: 18px 20px;
+  min-height: 250px;
+}
+.ws-job h2 {
+  font-size: 27px;
+  margin: 0 0 8px;
+}
+.ws-job-obs {
+  margin-top: 34px;
+  display: flex;
+  align-items: baseline;
+  gap: 26px;
+}
+.ws-job-obs .ws-md {
+  margin: 0 0 0 auto;
+}
+
+/* Which UIs survive */
+.ws-uiguess {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: stretch;
+}
+.ws-uiguess h2 {
+  font-size: 52px;
+}
+.ws-uiguess p,
+.ws-uiguess li {
+  font-size: 24px;
+  line-height: 1.45;
+}
+.ws-uiguess .ws-small {
+  display: block;
+  margin-top: 12px;
+}
+
+/* MCP apps */
+.ws-mcpapps {
+  width: 1390px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+.ws-mcpapps h2 {
+  font-size: 32px;
+}

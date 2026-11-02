@@ -1,17 +1,42 @@
 /* Slide visuals for the workshop deck. One component per custom slide id. */
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Icon, type IconName } from './Icon'
 
 type Props = { id: string; onJump: (id: string) => void }
 
 const chapters: { id: string; title: string; feature: string; icon: IconName }[] = [
   { id: 's01', title: 'The agent', feature: 'Loop · harness · MCP · skills', icon: 'loop' },
+  { id: 's-job', title: 'The analytics job', feature: 'Pipelines · data apps · storage · no UI', icon: 'layers' },
   { id: 's02', title: 'Context', feature: 'Guides', icon: 'book' },
-  { id: 's03', title: 'Interface', feature: 'Your agent, one link · Dives', icon: 'chat' },
-  { id: 's04', title: 'Isolation', feature: 'Hypertenancy · service accounts', icon: 'box' },
-  { id: 's05', title: 'Access', feature: 'Shares · secure views', icon: 'lock' },
-  { id: 's06', title: 'Observability', feature: 'Traces in MotherDuck · evals', icon: 'eye' }
+  { id: 's03', title: 'Data apps', feature: 'Dives · MCP apps · your agent link', icon: 'chat' },
+  { id: 's05', title: 'Permissions & sandbox', feature: 'Hypertenancy · shares · secure views', icon: 'lock' },
+  { id: 's06', title: 'Observability', feature: 'Flight Explainer · traces · evals', icon: 'eye' }
 ]
+
+// Guess slides: the room guesses first, then R (or the button) reveals the answer.
+function useReveal() {
+  const [shown, setShown] = useState(false)
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'r') setShown(v => !v)
+    }
+    window.addEventListener('keydown', key)
+    return () => window.removeEventListener('keydown', key)
+  }, [])
+  return [shown, () => setShown(v => !v)] as const
+}
+
+function RevealButton({ shown, toggle }: { shown: boolean; toggle: () => void }) {
+  return (
+    <button className="ws-reveal" onClick={toggle}>
+      {shown ? 'HIDE · R' : 'REVEAL · R'}
+    </button>
+  )
+}
+
+function Guess({ shown, children }: { shown: boolean; children: React.ReactNode }) {
+  return shown ? <>{children}</> : <span className="ws-guess">your guess?</span>
+}
 
 function Hero() {
   return (
@@ -207,6 +232,7 @@ function Hypertenancy() {
 }
 
 function Fears() {
+  const [shown, toggle] = useReveal()
   const rows = [
     ['It slows everyone down, or runs up a bill', 'Its own Duckling', 'compute'],
     ['It writes or drops something', 'Read-only token', 'token'],
@@ -227,13 +253,18 @@ function Fears() {
         <tbody>
           {rows.map(r => (
             <tr key={r[0]}>
-              {r.map((c, i) => (
-                <td key={i}>{c}</td>
-              ))}
+              <td>{r[0]}</td>
+              <td>
+                <Guess shown={shown}>{r[1]}</Guess>
+              </td>
+              <td>
+                <Guess shown={shown}>{r[2]}</Guess>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <RevealButton shown={shown} toggle={toggle} />
     </div>
   )
 }
@@ -486,13 +517,136 @@ function Harness() {
   )
 }
 
+function AnalyticsJob() {
+  const [shown, toggle] = useReveal()
+  const tasks: [string, string, string][] = [
+    ['Pipelines', 'Ingest and transform, on a schedule', 'Flights'],
+    ['Data apps', 'Dashboards, charts, small tools', 'Dives'],
+    ['Context', 'What the data means', 'Guides'],
+    ['Storage', 'Where the data lives', 'MotherDuck databases · DuckLake · local DuckDB'],
+    ['Permissions & sandbox', 'What it can see, touch and break', 'Ducklings · service accounts · shares · secure views']
+  ]
+  return (
+    <div className="ws-visual ws-job">
+      <div className="ws-job-row">
+        {tasks.map(([name, what, md]) => (
+          <div key={name} className="ws-node">
+            <h2>{name}</h2>
+            <p className="ws-small">{what}</p>
+            <p className="ws-md">
+              <Guess shown={shown}>{md}</Guess>
+            </p>
+          </div>
+        ))}
+      </div>
+      <div className="ws-node ws-strong ws-job-obs">
+        <h2>Observability</h2>
+        <span className="ws-small">covers all of the above: runs, apps, queries, the agent itself</span>
+        <span className="ws-md">
+          <Guess shown={shown}>Flight Explainer · query history · traces in MotherDuck</Guess>
+        </span>
+      </div>
+      <RevealButton shown={shown} toggle={toggle} />
+    </div>
+  )
+}
+
+function StackUi() {
+  const rows = [
+    ['Ingestion', 'connector setup screens', 'sync status page'],
+    ['Transformation', 'model editor, IDE', 'DAG and run history'],
+    ['Orchestration', 'DAG and schedule editor', 'run timeline, retries'],
+    ['BI', 'dashboard editor', 'the dashboard'],
+    ['Quality and catalog', 'rules and metadata forms', 'alerts and lineage graph']
+  ]
+  return (
+    <div className="ws-visual">
+      <table className="ws-table">
+        <thead>
+          <tr>
+            <th>Layer of the modern data stack</th>
+            <th>UI to build it</th>
+            <th>UI to watch it</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(r => (
+            <tr key={r[0]}>
+              {r.map((c, i) => (
+                <td key={i}>{c}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="ws-caption">Every layer ships two UIs: one to build, one to watch what you built.</p>
+    </div>
+  )
+}
+
+function UiGuess() {
+  const [shown, toggle] = useReveal()
+  return (
+    <div className="ws-visual ws-uiguess">
+      <div className="ws-node">
+        <span className="narrative-kicker">UI TO BUILD</span>
+        <h2>
+          <Guess shown={shown}>Chat</Guess>
+        </h2>
+        {shown && (
+          <p>
+            In data, the agent writes the connector, the SQL, the schedule and the chart. Describing it is enough.
+            <span className="ws-small"> Some work still needs a custom builder: editing video, laying out a design.</span>
+          </p>
+        )}
+      </div>
+      <div className="ws-node ws-strong">
+        <span className="narrative-kicker">UI TO WATCH</span>
+        <h2>
+          <Guess shown={shown}>Three survive</Guess>
+        </h2>
+        {shown && (
+          <ul>
+            <li>Dashboards: the numbers people read every day</li>
+            <li>Pipeline runs: the DAG, what failed, when</li>
+            <li>Agent traces: what it did, and why</li>
+          </ul>
+        )}
+      </div>
+      <RevealButton shown={shown} toggle={toggle} />
+    </div>
+  )
+}
+
+function McpApps() {
+  const apps: [string, string, string][] = [
+    ['Dashboards', 'Dive, rendered in the chat', 'save_dive · view_dive'],
+    ['Pipeline runs', 'Flight Explainer, the run viewer', 'run_flight · view_flight_run'],
+    ['Agent traces', 'a traces table and a Dive over it', 'query · save_dive']
+  ]
+  return (
+    <div className="ws-visual ws-mcpapps">
+      {apps.map(([what, app, tools]) => (
+        <div key={what} className="ws-node">
+          <span className="narrative-kicker">{what.toUpperCase()}</span>
+          <h2>{app}</h2>
+          <code>{tools}</code>
+        </div>
+      ))}
+      <p className="ws-caption ws-span">
+        An MCP app is a real UI that an MCP server sends, shown inside the chat. No tab switch, no second tool.
+      </p>
+    </div>
+  )
+}
+
 function FullAgent({ onJump }: { onJump: Props['onJump'] }) {
   const checks = [
     'It picks its next step and acts through tools.',
+    'It does the whole analytics job: pipelines, apps, storage.',
     'It knows what your business means.',
-    'It lives where your users are.',
-    'It can’t slow down or break anyone else.',
-    'It only sees what it should.',
+    'It shows results where your users are.',
+    'It only sees and touches what it should.',
     'It leaves a trace you can check.'
   ]
   return (
@@ -542,6 +696,14 @@ export function Visual({ id, onJump }: Props) {
       return <Instructions />
     case 'harness':
       return <Harness />
+    case 'analytics-tasks':
+      return <AnalyticsJob />
+    case 'stack-ui':
+      return <StackUi />
+    case 'ui-guess':
+      return <UiGuess />
+    case 'mcp-apps':
+      return <McpApps />
     case 'full-agent':
       return <FullAgent onJump={onJump} />
     case 'agent-mode':

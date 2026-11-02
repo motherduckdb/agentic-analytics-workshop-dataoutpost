@@ -28,6 +28,12 @@ Written 2026-11-01 at the end of the first working session (Mehdi with Claude Co
    context window, MCP, the five places to put instructions (system prompt, AGENTS.md, skill, MCP
    server instructions, guide), the harness, hooks, and what makes a full agent.
 
+8. Second session (on batnas): Mehdi wanted more focus on analytics. Added chapter 2, the analytics
+   job: six tasks (pipelines, data apps, context, storage, permissions and sandbox, observability)
+   mapped to MotherDuck features, and the "no UI" thesis: build UIs collapse into chat, watch UIs
+   stay (dashboards, pipeline runs, agent traces) and MotherDuck serves them as MCP apps. Guess
+   slides reveal with R. Isolation and access merged into "Permissions & sandbox".
+
 ## Where the facts came from
 
 Paths are on Mehdi's Mac. They may not exist on other machines.
