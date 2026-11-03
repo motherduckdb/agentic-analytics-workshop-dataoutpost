@@ -12,17 +12,10 @@ what the agent does.
 
 The prompts are the same as on the slide. Paste them as they are.
 
-1. In your workshop folder, add the [skill file](https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost/blob/main/exercises/1-local/skills/company-analytics/SKILL.md)
-   to your agent's skills folder, then start your agent there. Read the skill first: it is short.
+1. Start your agent in your `gloamwick` folder and ask it to add the [skill file](https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost/blob/main/exercises/1-local/skills/company-analytics/SKILL.md) itself.
+   Then restart your agent so it loads the skill. Paste:
 
-   ```sh
-   cd gloamwick
-   # Claude Code reads .claude/skills, Codex reads .agents/skills
-   mkdir -p .claude/skills/company-analytics && curl -fsSL -o .claude/skills/company-analytics/SKILL.md https://raw.githubusercontent.com/motherduckdb/agentic-analytics-workshop-dataoutpost/main/exercises/1-local/skills/company-analytics/SKILL.md
-   mkdir -p .agents/skills/company-analytics && curl -fsSL -o .agents/skills/company-analytics/SKILL.md https://raw.githubusercontent.com/motherduckdb/agentic-analytics-workshop-dataoutpost/main/exercises/1-local/skills/company-analytics/SKILL.md
-   ```
-
-   Other agents: check where yours reads [Agent Skills](https://agentskills.io/) from.
+   > Add the skill at https://raw.githubusercontent.com/motherduckdb/agentic-analytics-workshop-dataoutpost/main/exercises/1-local/skills/company-analytics/SKILL.md to this project's skills folder, as company-analytics/SKILL.md. Then tell me in one line what it does.
 
 2. Load the data. Paste:
 
@@ -54,7 +47,12 @@ The prompts are the same as on the slide. Paste them as they are.
 
 ## Notes
 
-- If the agent asks for permission to run `duckdb`, allow it.
+- If the agent asks for permission to run `duckdb` or to download the skill, allow it.
+- Prefer to add the skill yourself? Claude Code reads `.claude/skills`, Codex reads `.agents/skills`:
+
+  ```sh
+  mkdir -p .claude/skills/company-analytics && curl -fsSL -o .claude/skills/company-analytics/SKILL.md https://raw.githubusercontent.com/motherduckdb/agentic-analytics-workshop-dataoutpost/main/exercises/1-local/skills/company-analytics/SKILL.md
+  ```
 - If loading from S3 fails inside your agent's sandbox, run the agent without the sandbox for this
   exercise. DuckDB could not parse the Claude Code sandbox proxy URL in our tests.
 - Your numbers go on the spread slide later. Keep them.

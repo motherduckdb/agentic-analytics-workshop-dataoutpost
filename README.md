@@ -30,7 +30,7 @@ build fails if they disagree. Index, dataset and questions: [`exercises/README.m
 - No AI subscription? A workshop key from the [minter](https://motherduck.com/minter/w/next-data-stack-has-no-ui/):
   an OpenRouter key with $5 of credit for Claude Sonnet 5.5, Claude Haiku 5.5 and GPT-6 Luna. It
   also runs the level 4 agent.
-- [uv](https://docs.astral.sh/uv/), then the [DuckDB CLI](https://duckdb.org/docs/installation/)
+- [uv](https://docs.astral.sh/uv/), which brings Python with it, then the [DuckDB CLI](https://duckdb.org/docs/installation/)
   1.5.6 and the MotherDuck CLI from the MotherDuck installer. MotherDuck does not accept DuckDB 2.0
   clients yet, so do not use Homebrew's DuckDB.
 - A free [MotherDuck](https://motherduck.com) account for levels 2 to 4.

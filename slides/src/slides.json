@@ -1,7 +1,7 @@
 [
   {
     "id": "hero",
-    "title": "The next data stack has no UI",
+    "title": "The Next Data Stack Has No UI: Building End-to-End Analytics with Agents and Ducks",
     "kind": "custom",
     "theme": "sand",
     "section": "MOTHERDUCK WORKSHOP",
@@ -89,7 +89,10 @@
       }
     ],
     "doneWhen": "your agent reports DuckDB v1.5.6, lists your MotherDuck databases, finds uv, and motherduck status shows you signed in.",
-    "needs": ["a terminal", "a browser", "Homebrew: optional"],
+    "needs": [
+      "a coding agent: Claude Code, Codex…",
+      "uv, it brings Python (or ask your agent to install it)"
+    ],
     "notes": "Send exercises/0-setup/README.md before the day: five minutes in the room is only enough to fix what broke. The minter (motherduck.com/minter/w/next-data-stack-has-no-ui) gives each person an OpenRouter key with $5 of credit, valid Nov 3 to Nov 30 2026, for three models only: anthropic/claude-sonnet-5.5, anthropic/claude-haiku-5.5, openai/gpt-6-luna. DuckDB 1.5.6 everywhere, because MotherDuck rejects 2.0 clients (checked 2026-11-03: api.motherduck.com/latest_supported_duckdb_version.txt says 1.5.6). The MotherDuck installer reads that file, installs that DuckDB CLI, the MotherDuck extension and the motherduck CLI, and checks the connection when a token is set. Gotcha: because 1.5.6 is not DuckDB's latest stable, the DuckDB installer leaves it in ~/.duckdb/cli/1.5.6 and does not put it on PATH, hence the export line. Do not brew install duckdb: Homebrew ships 2.0. The repo must be public before the day: level 1 downloads its skill from GitHub, 2B links the guide, level 3 clones it. Why the PATH line goes in the profile: export only lasts for one terminal, and coding agents run commands in shells they start from the user's profile. The workshop key exports are read by the agent process itself, so the terminal it starts from is enough. The installer also offers to fetch a MotherDuck token through a browser login and save it in the profile, which covers the token the same way. Agent-neutral on purpose: people bring the agent they use. The tested path is Claude Code on the workshop key. The last prompt is the first time participants see the agent use the DuckDB CLI and the MotherDuck CLI."
   },
   {
@@ -251,7 +254,8 @@
     "status": "tested 2026-11-02 · new prompts not rerun",
     "steps": [
       {
-        "text": "In your gloamwick folder, add the [skill file](https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost/blob/main/exercises/1-local/skills/company-analytics/SKILL.md) to your agent's skills folder (.claude/skills, .agents/skills…), then start your agent. Commands in the README."
+        "text": "Start your agent in your gloamwick folder and ask it to add the [skill file](https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost/blob/main/exercises/1-local/skills/company-analytics/SKILL.md). Then restart it so it loads the skill.",
+        "prompt": "Add the skill at https://raw.githubusercontent.com/motherduckdb/agentic-analytics-workshop-dataoutpost/main/exercises/1-local/skills/company-analytics/SKILL.md to this project's skills folder, as company-analytics/SKILL.md. Then tell me in one line what it does."
       },
       {
         "text": "Load the data.",

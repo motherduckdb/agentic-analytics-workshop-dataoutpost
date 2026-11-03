@@ -107,27 +107,14 @@ function Guess({
   return shown ? <>{children}</> : <span className="ws-guess">your guess?</span>
 }
 
+// The Data Outpost title slide, as the organizers designed it, edge to edge.
 function Hero() {
   return (
-    <div className="ws-visual ws-hero">
-      <div>
-        <span className="narrative-kicker">
-          MOTHERDUCK WORKSHOP · 90 MIN · HANDS-ON
-        </span>
-        <h2>
-          THE NEXT
-          <br />
-          DATA STACK
-          <br />
-          HAS NO UI
-        </h2>
-        <p>
-          Build an analytics agent end to end, and see what each piece needs.
-        </p>
-        <p className="ws-names">Mehdi Ouazza · Jacob Matson</p>
-      </div>
-      <img src="assets/duck-pointing.svg" alt="MotherDuck duck pointing" />
-    </div>
+    <img
+      className="ws-title-img"
+      src="assets/title-data-outpost.png"
+      alt="The Next Data Stack Has No UI: Building End-to-End Analytics with Agents and Ducks. Speakers: Mehdi Ouazza and Jacob Matson, MotherDuck. Data Outpost."
+    />
   )
 }
 

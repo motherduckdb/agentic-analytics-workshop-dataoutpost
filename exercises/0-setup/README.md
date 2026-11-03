@@ -5,10 +5,13 @@ Time: 5 minutes. Do it before the workshop if you can.
 Everyone works on the same data: **Gloamwick Studios**, a fictional mobile game from duckgen. See
 [the exercises index](../README.md) for the dataset and the questions.
 
-You install [uv](https://docs.astral.sh/uv/), the
-[DuckDB CLI](https://duckdb.org/docs/installation/) at version 1.5.6 (the latest version MotherDuck
-supports), the [MotherDuck CLI](https://motherduck.com/docs/getting-started/interfaces/connect-query-from-duckdb-cli/),
-and the coding agent of your choice.
+What you need: a coding agent (Claude Code, Codex…) and [uv](https://docs.astral.sh/uv/). uv
+brings Python with it, so there is nothing else to install for the Python parts. Already have an
+agent? Ask it to install uv for you.
+
+Setup adds the [DuckDB CLI](https://duckdb.org/docs/installation/) at version 1.5.6 (the latest
+version MotherDuck supports) and the
+[MotherDuck CLI](https://motherduck.com/docs/getting-started/interfaces/connect-query-from-duckdb-cli/).
 
 ## Steps
 
