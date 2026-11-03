@@ -73,5 +73,6 @@ The rows land in `workshop_traces.spans`, with the same columns as the data behi
    `workshop_traces`. Its other tables (cases, tools, handoffs) do not exist here, so expect to drop
    those parts.
 
-Tested with a local DuckDB file and a simulated run (`TRACES_DB=traces.duckdb`), not yet against
-MotherDuck or on a real OpenRouter run.
+Tested on 2026-11-03 on `openai/gpt-6-luna`, with the traces in a local DuckDB file
+(`TRACES_DB=traces.duckdb`): one run gave 12 spans, about 20k input tokens and $0.003. Not yet
+written to MotherDuck itself.

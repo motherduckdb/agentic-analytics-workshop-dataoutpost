@@ -18,109 +18,98 @@ Three things to look for:
   the rows and columns it allows.
 - **Every question is logged** with its SQL in `questions.jsonl`.
 
+The server runs on your laptop and serves MCP on `http://127.0.0.1:8000/mcp`. Agents on your laptop
+can reach it (Claude Code, Codex, Cursor). claude.ai on the web and ChatGPT cannot reach your laptop:
+you would deploy the server first.
+
 ## Steps
 
 The prompts are the same as on the slide. Paste them as they are.
 
-1. Clone the workshop repo, go to the level 3 folder, and read `server.py`. Find `live_ops_impact`,
-   the log, and where the token comes from.
+1. Clone the workshop repo, then ask your agent to walk you through the server:
 
    ```sh
    git clone https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost.git
-   cd agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp
    ```
 
-2. Connect your agent to your local server, and to no other MCP server, so it can only use your
-   tools. A local server runs on your laptop over stdio: your agent starts it. That works in agents
-   that run on your laptop, like Claude Code, Codex or Cursor. claude.ai on the web and ChatGPT only
-   take remote servers, so you would deploy this one first.
+   Paste:
 
-   - Claude Code: start it from this folder with the config next to `server.py`, then type `/mcp`:
-     `company-data` should be connected. `mcp.json` passes `MOTHERDUCK_TOKEN` to the server.
+   > Explain agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp/server.py in five lines: its tools, the one that only exists here, where the token comes from, what it logs.
 
-     ```sh
-     claude --strict-mcp-config --mcp-config mcp.json
-     ```
-
-   - Codex: add the server to `~/.codex/config.toml`, with the full path of this folder, then start
-     `codex`. `env_vars` forwards your token without writing it in the file. From the Codex docs, not
-     tested.
-
-     ```toml
-     [mcp_servers.company-data]
-     command = "uv"
-     args = ["run", "-q", "server.py"]
-     cwd = "/full/path/to/exercises/3-custom-mcp"
-     env_vars = ["MOTHERDUCK_TOKEN", "TRACE_TO_MOTHERDUCK"]
-     ```
-
-   - Cursor and others: register `uv run server.py`, run from this folder, as a stdio server with
-     `MOTHERDUCK_TOKEN` in its environment.
-
-3. Ask the workshop question. Watch for `live_ops_impact` in the tool calls: only your server has
-   it. Count the turns and compare with levels 1 and 2. Paste:
-
-   > Which live-ops changes since spring 2025 moved day-7 retention or revenue per daily active user, and on which platform? Show the SQL.
-
-4. Read your log. Every question and its SQL is there.
+2. Start your server in a second terminal, with `MOTHERDUCK_TOKEN` exported there too. Leave it
+   running: it serves MCP on `http://127.0.0.1:8000/mcp`.
 
    ```sh
-   cat questions.jsonl
+   cd agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp && uv run server.py
    ```
 
-5. Add your own tool: copy `live_ops_impact` into a `starter_conversion` tool with the SQL from
-   level 2. Restart your agent, then paste:
+3. Add the server to your agent, then restart your agent:
 
-   > Did the starter pack price cut lift payer conversion? Split by acquisition channel, before and after. Show the SQL.
+   ```sh
+   claude mcp add --transport http company-data http://127.0.0.1:8000/mcp
+   codex mcp add company-data --url http://127.0.0.1:8000/mcp
+   ```
+
+   The first line is for Claude Code (`/mcp` should then show `company-data` connected), the second
+   for Codex (from the Codex docs, not tested). Other agents: add an HTTP MCP server with that URL.
+
+4. Ask the workshop question with your tools only. Watch for `live_ops_impact` in the tool calls:
+   only your server has it. Paste:
+
+   > Use only the company-data tools. Which live-ops changes since spring 2025 moved day-7 retention or revenue per daily active user, and on which platform? Show the SQL.
+
+5. Look at what your server logged, with DuckDB. Paste:
+
+   > Use the DuckDB CLI to show agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp/questions.jsonl as a table: time, question and outcome.
+
+6. Bonus: trace your agent into MotherDuck. Stop the server (Ctrl-C), start it again with tracing on,
+   ask the workshop question again, then build a Dive over the traces:
+
+   ```sh
+   TRACE_TO_MOTHERDUCK=1 uv run server.py
+   ```
+
+   Paste, in an agent that also has the MotherDuck MCP server from 2A:
+
+   > Build a Dive over workshop_traces like the Agent observability Dive in the MotherDuck Dive gallery: the traces from agent_traces, and the run tree of one trace from spans.
 
 ## Done when
 
-Your agent answered with your tools only, it called `live_ops_impact`, and `questions.jsonl` shows
-the question.
+Your agent answered with your tools only, it called `live_ops_impact`, and you saw your question log
+as a table.
+
+## About the bonus
+
+[`traces.py`](traces.py) turns each tool call into an
+[OpenTelemetry GenAI](https://opentelemetry.io/docs/specs/semconv/gen-ai/) span (`execute_tool`, the
+tool name, the question, the SQL, the duration, the status) and writes it as a row to
+`workshop_traces.spans` in your MotherDuck account, with the same columns as the data behind the
+[Agent observability Dive](https://motherduck.com/dive-gallery/dives/agent-observability). The
+`agent_traces` view has one row per trace. It is off unless `TRACE_TO_MOTHERDUCK=1`.
+
+Here you only get tool spans: the model runs inside your agent, out of the server's sight. Level 4
+traces the whole run, with tokens and cost. You can also query the spans yourself:
+
+```sh
+motherduck query "FROM workshop_traces.spans ORDER BY start_time DESC LIMIT 10"
+```
 
 ## If you finish early
 
+- Add your own tool: copy `live_ops_impact` into a `starter_conversion` tool with the SQL from
+  level 2, restart the server, and ask the 2B question.
 - Create a [service account](https://motherduck.com/docs/key-tasks/service-accounts-guide/create-and-configure-service-accounts/)
   (the free plan allows two), give it the Gloamwick share, and start your server with its token
-  instead of yours. Ask the same question: same tools, other rights. Not tested yet.
-
-## Bonus: trace your agent into MotherDuck
-
-Your server can write one [OpenTelemetry](https://opentelemetry.io/docs/specs/semconv/gen-ai/) span
-per tool call to MotherDuck, then you look at them in a Dive, like the
-[Agent observability Dive](https://motherduck.com/dive-gallery/dives/agent-observability) in the
-MotherDuck Dive gallery. [`traces.py`](traces.py) does it: GenAI spans (`execute_tool`,
-`gen_ai.tool.name`, the question, the SQL, the duration, the status), written as rows to
-`workshop_traces.spans` with the same columns as the gallery Dive's data, plus an `agent_traces` view
-with one row per trace. It is off unless you turn it on.
-
-1. Turn tracing on, then restart your agent so it restarts the server:
-
-   ```sh
-   export TRACE_TO_MOTHERDUCK=1
-   ```
-
-2. Ask the workshop question again. Then look at the spans:
-
-   ```sh
-   motherduck query "FROM workshop_traces.spans ORDER BY start_time DESC LIMIT 10"
-   ```
-
-3. In an agent connected to the MotherDuck MCP server (level 2), build the Dive:
-
-   > Build a Dive over workshop_traces like the Agent observability Dive in the MotherDuck Dive gallery: a list of traces from agent_traces, the run tree of one trace from spans, tool calls with their status and duration.
-
-Here you only get tool spans: the model runs inside your agent, out of the server's sight. Level 4
-traces the whole run, with tokens and cost. Not tested against MotherDuck yet: tested with a local
-DuckDB file (`TRACES_DB=traces.duckdb`).
+  instead of yours. Same tools, other rights. Not tested yet.
 
 ## Notes
 
-- `COMPANY_DB` sets the database name (default `gaming_gloamwick_liveops`), `QUESTION_LOG` the log
-  file.
+- `PORT` changes the port (default 8000), `COMPANY_DB` the database (default
+  `gaming_gloamwick_liveops`), `QUESTION_LOG` the log file.
+- `uv run server.py --stdio` speaks MCP on stdin and stdout instead. Level 4's `agent.py` starts it
+  that way.
 - `how_we_count` and `read_definition` forward `get_query_guide` and `get_guide`, so the guide you
-  wrote in 2B still reaches the agent. Without `get_guide` the agent sees guide titles and cannot
-  read them.
+  wrote in 2B still reaches the agent.
 - Read scaling (read-only) tokens and secure views need a paid plan (secure views: Business or
   Enterprise, trials count). On the free plan the token story stops at the service account: it only
   reaches the shares you grant it.

@@ -154,7 +154,8 @@ def setup(service_name: str) -> Tracer:
     """A tracer for this process. Without TRACE_TO_MOTHERDUCK=1 its spans go nowhere."""
     provider = TracerProvider(resource=Resource.create({"service.name": service_name}))
     if ENABLED:
-        provider.add_span_processor(BatchSpanProcessor(MotherDuckSpanExporter(TARGET)))
+        # Export every second, not only at exit: a server stopped with SIGTERM skips atexit.
+        provider.add_span_processor(BatchSpanProcessor(MotherDuckSpanExporter(TARGET), schedule_delay_millis=1000))
         atexit.register(provider.shutdown)
     return provider.get_tracer("agentic-analytics-workshop")
 

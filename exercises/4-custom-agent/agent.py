@@ -63,7 +63,7 @@ async def main(question: str) -> None:
     # The server gets the MotherDuck token. The model never sees it.
     # The agent traces the whole run, so the server does not trace a second time.
     env = {k: v for k, v in os.environ.items() if k not in ("OPENROUTER_API_KEY", "TRACE_TO_MOTHERDUCK")}
-    server = StdioTransport(command="uv", args=["run", "-q", str(SERVER)], env=env)
+    server = StdioTransport(command="uv", args=["run", "-q", str(SERVER), "--stdio"], env=env)
     with traces.agent_span(TRACER, "gloamwick-agent", MODEL, question) as run:
         async with Client(server) as mcp:
             tools = [as_openai_tool(t) for t in await mcp.list_tools()]

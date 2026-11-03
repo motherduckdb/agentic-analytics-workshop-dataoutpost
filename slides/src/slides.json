@@ -65,35 +65,30 @@
     "title": "Hands-on 0: set up",
     "section": "00 · TODAY · HANDS-ON",
     "minutes": 5,
-    "status": "minter live · send before the day",
     "exercise": "exercises/0-setup",
     "steps": [
       {
-        "text": "Install uv, then DuckDB 1.5.6 and the MotherDuck CLI with the [MotherDuck installer](https://motherduck.com/docs/getting-started/interfaces/connect-query-from-duckdb-cli/). Say yes to the token, then put DuckDB on your PATH for good.",
-        "cmd": [
-          "curl -LsSf https://astral.sh/uv/install.sh | sh",
-          "curl -s https://install.motherduck.com | sh",
-          "echo 'export PATH=\"$HOME/.duckdb/cli/1.5.6:$PATH\"' >> ~/.zshrc"
-        ]
+        "text": "Install a coding agent, any one you like: [Claude Code](https://code.claude.com/docs/en/setup), [Codex](https://developers.openai.com/codex/cli)…"
       },
       {
-        "text": "Install a coding agent, any one you like ([Claude Code](https://code.claude.com/docs/en/setup), [Codex](https://developers.openai.com/codex/cli)…). No need to clone the repo yet."
+        "text": "Create a free [MotherDuck account](https://app.motherduck.com) and an [access token](https://app.motherduck.com/settings/tokens) (Settings, Integrations, Access tokens). Export it.",
+        "cmd": ["export MOTHERDUCK_TOKEN=<your MotherDuck token>"]
       },
       {
-        "text": "Open a new terminal. No AI subscription? Claim a key at [the minter](https://motherduck.com/minter/w/next-data-stack-has-no-ui/) and paste its exports."
+        "text": "No AI subscription? Claim a key at [the minter](https://motherduck.com/minter/w/next-data-stack-has-no-ui/) and paste its exports in the same terminal."
       },
       {
-        "text": "Make a folder for the workshop, start your agent in it, and let it check your setup.",
+        "text": "Make a folder, start your agent in it, and let it install and check everything.",
         "cmd": ["mkdir gloamwick && cd gloamwick"],
-        "prompt": "Check my workshop setup. Use the DuckDB CLI to print its version and to run SHOW DATABASES on md:, then run uv --version and motherduck status. Tell me what is missing. Never print a token."
+        "prompt": "Set up my laptop for the MotherDuck workshop. Install uv with: curl -LsSf https://astral.sh/uv/install.sh | sh. Install DuckDB 1.5.6 and the MotherDuck CLI with: curl -s https://install.motherduck.com | sh. Add this line to my shell profile: export PATH=\"$HOME/.duckdb/cli/1.5.6:$PATH\". Then check that ~/.duckdb/cli/1.5.6/duckdb --version says 1.5.6, that it can run SHOW DATABASES on md:, and that uv --version and motherduck status work. Tell me what is missing. Never print a token."
       }
     ],
     "doneWhen": "your agent reports DuckDB v1.5.6, lists your MotherDuck databases, finds uv, and motherduck status shows you signed in.",
     "needs": [
       "a coding agent: Claude Code, Codex…",
-      "uv, it brings Python (or ask your agent to install it)"
+      "a MotherDuck account and a token: Settings, Integrations, Access tokens"
     ],
-    "notes": "Send exercises/0-setup/README.md before the day: five minutes in the room is only enough to fix what broke. The minter (motherduck.com/minter/w/next-data-stack-has-no-ui) gives each person an OpenRouter key with $5 of credit, valid Nov 3 to Nov 30 2026, for three models only: anthropic/claude-sonnet-5.5, anthropic/claude-haiku-5.5, openai/gpt-6-luna. DuckDB 1.5.6 everywhere, because MotherDuck rejects 2.0 clients (checked 2026-11-03: api.motherduck.com/latest_supported_duckdb_version.txt says 1.5.6). The MotherDuck installer reads that file, installs that DuckDB CLI, the MotherDuck extension and the motherduck CLI, and checks the connection when a token is set. Gotcha: because 1.5.6 is not DuckDB's latest stable, the DuckDB installer leaves it in ~/.duckdb/cli/1.5.6 and does not put it on PATH, hence the export line. Do not brew install duckdb: Homebrew ships 2.0. The repo must be public before the day: level 1 downloads its skill from GitHub, 2B links the guide, level 3 clones it. Why the PATH line goes in the profile: export only lasts for one terminal, and coding agents run commands in shells they start from the user's profile. The workshop key exports are read by the agent process itself, so the terminal it starts from is enough. The installer also offers to fetch a MotherDuck token through a browser login and save it in the profile, which covers the token the same way. Agent-neutral on purpose: people bring the agent they use. The tested path is Claude Code on the workshop key. The last prompt is the first time participants see the agent use the DuckDB CLI and the MotherDuck CLI."
+    "notes": "Send exercises/0-setup/README.md before the day. The agent installs uv, DuckDB 1.5.6 and the MotherDuck CLI from one prompt, so people only install their agent and get a MotherDuck token. Export MOTHERDUCK_TOKEN before starting the agent: run by an agent, the MotherDuck installer skips its interactive token prompt, and with the token set it checks the connection. The PATH line goes in the shell profile, because coding agents start their own shells from it; restart the agent after setup. DuckDB 1.5.6 because MotherDuck rejects 2.0 clients (checked 2026-11-03). The minter gives an OpenRouter key with $5 for Sonnet 5.5, Haiku 5.5 and GPT-6 Luna, valid Nov 3 to Nov 30 2026. The repo must be public before the day: level 1 downloads its skill from GitHub, 2B links the guide, level 3 clones it. The setup prompt itself has not been run by an agent on a clean machine yet."
   },
   {
     "id": "s01",
@@ -251,7 +246,6 @@
     "title": "Hands-on 1: a local analytics agent",
     "section": "LEVEL 1 · LOCAL · HANDS-ON",
     "minutes": 10,
-    "status": "tested 2026-11-02 · new prompts not rerun",
     "steps": [
       {
         "text": "Start your agent in your gloamwick folder and ask it to add the [skill file](https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost/blob/main/exercises/1-local/skills/company-analytics/SKILL.md). Then restart it so it loads the skill.",
@@ -321,7 +315,6 @@
     "title": "Hands-on 2A: connect to MotherDuck",
     "section": "LEVEL 2 · MOTHERDUCK · HANDS-ON",
     "minutes": 5,
-    "status": "prompt tested 2026-11-03",
     "exercise": "exercises/2a-mcp",
     "steps": [
       {
@@ -370,7 +363,6 @@
     "title": "Hands-on 2B: add a guide, ask again",
     "section": "LEVEL 2 · MOTHERDUCK · HANDS-ON",
     "minutes": 5,
-    "status": "prompt tested 2026-11-03",
     "exercise": "exercises/2b-guide",
     "steps": [
       {
@@ -399,7 +391,6 @@
     "title": "Hands-on 2C: build a Dive, give it a style",
     "section": "LEVEL 2 · MOTHERDUCK · HANDS-ON",
     "minutes": 5,
-    "status": "not run yet",
     "exercise": "exercises/2c-dive",
     "steps": [
       {
@@ -490,40 +481,54 @@
     "notes": "From the MotherDuck white-label guide. Your server proxies the remote MCP server over streamable HTTP with a bearer token. It forwards a small set (query, list_tables, list_columns, the guide read tools) under your names, drops query_rw and Flight tools, and adds tools only you have: live_ops_impact holds the SQL for the weekly question. A required question parameter is logged with the SQL. Local vs remote: the hands-on server runs locally over stdio, so the agent on your laptop starts it (Claude Code, Codex, Cursor). claude.ai on the web and ChatGPT only take remote servers, so a product deploys it. The token: the server calls MotherDuck with whatever MOTHERDUCK_TOKEN holds and never shows it. Give it a service account (all plans; free allows two) and users get that account's rights: only the shares granted, read-only with read scaling tokens (paid plans), rows and columns cut by a secure view on the share (Business or Enterprise). One service account per tenant also gives one Duckling per tenant. The doc's example uses FastMCP 4.0.3."
   },
   {
+    "id": "custom-tool",
+    "title": "A tool only your server has",
+    "kind": "custom",
+    "theme": "sand",
+    "section": "LEVEL 3 · CUSTOM MCP",
+    "notes": "The snippet is live_ops_impact from exercises/3-custom-mcp/server.py, shortened. The tool carries the SQL for a question the business asks every week, with the guide's rules baked in, so the agent calls one tool instead of exploring tables: 5 turns instead of 16 to 18 in the 2026-11-02 runs. The question is a required argument, so every call is logged with its SQL. The list on the right is ideas, not code in the repo: any repeated question, any definition, any action (posting to Slack) can become a tool, and it only exists for agents that use your server."
+  },
+  {
     "id": "ho-tools",
     "theme": "sand",
     "kind": "custom",
     "title": "Hands-on 3: your own MCP server",
     "section": "LEVEL 3 · CUSTOM MCP · HANDS-ON",
     "minutes": 10,
-    "status": "tested 2026-11-02 · mcp.json not run",
     "steps": [
       {
-        "text": "Clone the workshop repo and read server.py: find live_ops_impact, the log, and where the token comes from.",
+        "text": "Clone the workshop repo, then ask your agent to walk you through the server.",
+        "cmd": ["git clone https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost.git"],
+        "prompt": "Explain agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp/server.py in five lines: its tools, the one that only exists here, where the token comes from, what it logs."
+      },
+      {
+        "text": "Start it in a second terminal (MOTHERDUCK_TOKEN exported). It serves http://127.0.0.1:8000/mcp.",
+        "cmd": ["cd agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp && uv run server.py"]
+      },
+      {
+        "text": "Add it to your agent (Claude Code, then Codex), and restart the agent.",
         "cmd": [
-          "git clone https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost.git",
-          "cd agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp"
+          "claude mcp add --transport http company-data http://127.0.0.1:8000/mcp",
+          "codex mcp add company-data --url http://127.0.0.1:8000/mcp"
         ]
       },
       {
-        "text": "Connect your agent to your local server, and no other. It runs on your laptop over stdio: Claude Code, Codex or Cursor, not claude.ai or ChatGPT. Setup per agent in the README."
+        "text": "Ask with your tools only. Watch for live_ops_impact: only your server has it.",
+        "prompt": "Use only the company-data tools. Which live-ops changes since spring 2025 moved day-7 retention or revenue per daily active user, and on which platform? Show the SQL."
       },
       {
-        "text": "Ask the workshop question. Watch for live_ops_impact: only your server has it.",
-        "prompt": "Which live-ops changes since spring 2025 moved day-7 retention or revenue per daily active user, and on which platform? Show the SQL."
+        "text": "Look at what your server logged, with DuckDB.",
+        "prompt": "Use the DuckDB CLI to show agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp/questions.jsonl as a table: time, question and outcome."
       },
       {
-        "text": "Read your log.",
-        "cmd": ["cat questions.jsonl"]
-      },
-      {
-        "text": "Add a starter_conversion tool with your level 2 SQL. Restart, then ask:",
-        "prompt": "Did the starter pack price cut lift payer conversion? Split by acquisition channel, before and after. Show the SQL."
+        "text": "Bonus: restart the server with traces, ask again, then build a Dive over them.",
+        "cmd": ["TRACE_TO_MOTHERDUCK=1 uv run server.py"],
+        "prompt": "Build a Dive over workshop_traces like the Agent observability Dive in the MotherDuck Dive gallery: the traces from agent_traces, and the run tree of one trace from spans."
       }
     ],
-    "doneWhen": "your agent answered with your tools only, it called live_ops_impact, and questions.jsonl shows the question.",
-    "needs": ["git", "uv", "Claude Code, Codex or Cursor", "MOTHERDUCK_TOKEN"],
-    "notes": "Steps and prompts match exercises/3-custom-mcp/README.md. This is the first time participants clone the repo. The README has the setup per agent: Claude Code with claude --strict-mcp-config --mcp-config mcp.json, Codex with an mcp_servers entry in ~/.codex/config.toml using env_vars = ['MOTHERDUCK_TOKEN'] and cwd (from the Codex docs, not tested). Tested 2026-11-02 with server.py on Claude Code: 5 turns, 28 s, $0.07, against 16 to 18 turns at levels 1 and 2, because live_ops_impact carries the SQL. Every question landed in questions.jsonl. Point at the tool call on screen: that tool exists nowhere else. Then the token: whoever runs the server picks it. Stretch in the README: start the server with a service account's token (not tested). Needs the share attached, which hands-on 2A does. Bonus slide next: trace the agent into MotherDuck.",
+    "doneWhen": "your agent answered with your tools only, it called live_ops_impact, and you saw your question log as a table.",
+    "needs": ["git", "Claude Code, Codex or Cursor", "MOTHERDUCK_TOKEN"],
+    "notes": "Steps and prompts match exercises/3-custom-mcp/README.md. First clone of the repo. The server now serves HTTP on a fixed address, http://127.0.0.1:8000/mcp (PORT to change it), so adding it is one predictable command per agent: claude mcp add --transport http, or codex mcp add --url (Codex form from its docs, not tested). Tested 2026-11-03: the server starts over HTTP, lists its six tools, live_ops_impact returns real Gloamwick rows from MotherDuck, the question log is written, and with TRACE_TO_MOTHERDUCK=1 the call lands as an execute_tool span (932 ms). Earlier run (2026-11-02, stdio, Claude Code): 5 turns, 28 s, $0.07, against 16 to 18 turns at levels 1 and 2. Step 5 reads the JSONL log with DuckDB, which sets up step 6: the same idea as OpenTelemetry spans in MotherDuck, then a Dive like the gallery's Agent observability. Step 6 needs the MotherDuck MCP server from 2A in the agent.",
     "exercise": "exercises/3-custom-mcp"
   },
   {
@@ -534,7 +539,7 @@
     "section": "LEVEL 3 · CUSTOM MCP · BONUS",
     "source": "https://motherduck.com/dive-gallery/dives/agent-observability",
     "sourceLabel": "DIVE GALLERY · AGENT OBSERVABILITY",
-    "notes": "Bonus for fast people, steps in exercises/3-custom-mcp/README.md and exercises/4-custom-agent/README.md. traces.py (next to server.py) turns each run into OpenTelemetry GenAI spans: invoke_agent for the run, chat for each model call (tokens and cost from OpenRouter's usage), execute_tool for each tool call. A small exporter writes them as rows to workshop_traces.spans in the participant's own MotherDuck account, with the same columns as the spans table behind the Agent observability Dive in the gallery (insurance_brightholm_agent_ops, a duckgen dataset), plus question and sql. agent_traces is a view with one row per trace. Off unless TRACE_TO_MOTHERDUCK=1. Level 3 only sees tool calls, because the model runs inside Claude Code or Codex. Level 4 owns the loop, so it traces everything. Then one prompt builds a Dive like the gallery one, or copy the gallery Dive and point it at workshop_traces. Same pattern as /try and duckgen, which write their spans to llm_obs in MotherDuck. Tested with a local DuckDB file and a simulated run on 2026-11-03, not yet against MotherDuck or a real model run."
+    "notes": "Bonus for fast people: step 6 of hands-on 3, and the bonus in exercises/4-custom-agent/README.md. traces.py (next to server.py) turns each run into OpenTelemetry GenAI spans: invoke_agent for the run, chat for each model call (tokens and cost from OpenRouter's usage), execute_tool for each tool call. A small exporter writes them as rows to workshop_traces.spans in the participant's own MotherDuck account, with the same columns as the spans table behind the Agent observability Dive in the gallery (insurance_brightholm_agent_ops, a duckgen dataset), plus question and sql. agent_traces is a view with one row per trace. Off unless TRACE_TO_MOTHERDUCK=1. Level 3 only sees tool calls, because the model runs inside Claude Code or Codex. Level 4 owns the loop, so it traces everything. Then one prompt builds a Dive like the gallery one, or copy the gallery Dive and point it at workshop_traces. Same pattern as /try and duckgen, which write their spans to llm_obs in MotherDuck. Tested 2026-11-03 against a local DuckDB file with real runs: the level 3 server over HTTP (one execute_tool span, 932 ms) and agent.py on GPT-6 Luna (12 spans, 20.6k/3.1k tokens, $0.0028). Not yet written to MotherDuck itself."
   },
   {
     "id": "s-l4",
@@ -589,7 +594,6 @@
     "title": "Hands-on 4: your own agent",
     "section": "LEVEL 4 · CUSTOM AGENT · HANDS-ON",
     "minutes": 10,
-    "status": "loop tested on Gemini · Luna not run",
     "steps": [
       {
         "text": "Point the agent at the workshop key and the default model.",
@@ -613,7 +617,7 @@
     ],
     "doneWhen": "your agent answers on the model you picked, and you can say which tools it called.",
     "needs": ["the workshop key", "uv", "MOTHERDUCK_TOKEN"],
-    "notes": "Steps match exercises/4-custom-agent/README.md, which has the full commands to paste. The loop is tested: agent.py, about 60 lines, Gemini 3.8 Flash via OpenRouter, tools from the level 3 server, 5 steps. It read the guide written at level 2 and returned the same numbers as the Claude run. The workshop key does not allow Gemini, so the default is now openai/gpt-6-luna, not run yet. Run it once on a workshop key before the day. Stretch: write each step to a MotherDuck table, the traces on the next slide. Bonus in the README: TRACE_TO_MOTHERDUCK=1 traces the whole run (invoke_agent, chat with tokens and cost, execute_tool) to workshop_traces.",
+    "notes": "Steps match exercises/4-custom-agent/README.md. Tested 2026-11-03 on openai/gpt-6-luna, the workshop key's default: the workshop question answered in 38 s, 3 steps, 7 tool calls (list_company_tables, how_we_count, live_ops_impact, read_definition, describe_table x2, ask_data). It found the boss rework (Android D7 14.48% to 10.68%, iOS flat) and the chest video (ARPDAU +2 cents on both platforms); one table cell had a garbled unit, Luna is less careful with formatting than Sonnet. With TRACE_TO_MOTHERDUCK=1 the run wrote 12 spans: 20.6k input and 3.1k output tokens, $0.0028. agent.py starts the level 3 server itself, over stdio (server.py --stdio). The OpenRouter key never reaches the server, the MotherDuck token never reaches the model.",
     "exercise": "exercises/4-custom-agent"
   },
   {
