@@ -1,3 +1,7 @@
+// A hands-on step. `prompt` is pasted into the agent, `cmd` runs in the terminal. Both must appear
+// word for word in the README of the slide's `exercise` folder (the build checks it).
+export type Step = string | { text: string; prompt?: string; cmd?: string[] }
+
 export type Slide = {
   id?: string
   title: string
@@ -13,8 +17,10 @@ export type Slide = {
   language?: 'sql' | 'loop' | 'md'
   // Hands-on slides (id starts with ho-): a time box, steps, an exit check, what to install.
   minutes?: number
-  steps?: string[]
+  steps?: Step[]
   doneWhen?: string
   needs?: string[]
   status?: string
+  // Repo folder whose README.md carries the same steps, for example exercises/1-local.
+  exercise?: string
 }
