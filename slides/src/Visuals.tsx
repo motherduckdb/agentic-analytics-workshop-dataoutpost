@@ -112,7 +112,7 @@ function Hero() {
   return (
     <img
       className="ws-title-img"
-      src="assets/title-data-outpost.png"
+      src="assets/title-data-outpost.svg"
       alt="The Next Data Stack Has No UI: Building End-to-End Analytics with Agents and Ducks. Speakers: Mehdi Ouazza and Jacob Matson, MotherDuck. Data Outpost."
     />
   )
@@ -673,6 +673,54 @@ function Traces() {
         />
         <figcaption>Agent observability · MotherDuck Dive gallery</figcaption>
       </figure>
+    </div>
+  )
+}
+
+// Level 3: the tool only your server has, and other tools you could add.
+function CustomTool() {
+  const snippet = `@mcp.tool
+async def live_ops_impact(question: str, days: int = 14) -> Any:
+    """D7 retention and ARPDAU in the N days before and
+    after each live-ops change, by platform."""
+    sql = f"""
+      SELECT e.event_name, m.platform, period,
+             d7_retention_pct, arpdau_cents   -- the guide's rules
+      FROM live_ops_events e
+      JOIN daily_player_metrics m ON ... {days} days ...
+    """
+    result = await upstream("query", {"database": DATABASE,
+                            "sql": sql}, "live_ops_impact", question, sql)
+    log(question, sql, "ok")
+    return result`
+  const ideas: [string, string][] = [
+    ['starter_conversion(channel)', 'the 2B question in one call'],
+    ['weekly_kpis(week)', 'the numbers for the Monday meeting'],
+    ['explain_metric(name)', 'one definition from the guide'],
+    ['compare_platforms(metric)', 'iOS vs Android, same SQL every time'],
+    ['notify_team(text)', 'post the answer to Slack']
+  ]
+  return (
+    <div className="ws-visual ws-custom-tool">
+      <div className="ws-custom-code">
+        <span className="narrative-kicker">exercises/3-custom-mcp/server.py</span>
+        <pre>
+          <code>{snippet}</code>
+        </pre>
+      </div>
+      <div className="ws-custom-ideas">
+        <span className="narrative-kicker">OTHER TOOLS YOU COULD ADD</span>
+        {ideas.map(([name, what]) => (
+          <div key={name}>
+            <code>{name}</code>
+            <span>{what}</span>
+          </div>
+        ))}
+        <p className="ws-small">
+          The SQL lives in the tool, not in the prompt: fewer turns, the same
+          number every time, and the question is logged.
+        </p>
+      </div>
     </div>
   )
 }
@@ -1758,7 +1806,7 @@ function HandsOn({ slide }: { slide: Slide }) {
     typeof st === 'string' ? { text: st } : st
   )
   return (
-    <div className="ws-visual ws-ho">
+    <div className={'ws-visual ws-ho' + (steps.length >= 6 ? ' ws-ho-dense' : '')}>
       <img
         className="ws-ho-duck"
         src="assets/duck-hands-on.png"
@@ -1766,14 +1814,16 @@ function HandsOn({ slide }: { slide: Slide }) {
       />
       <div className="ws-ho-side">
         <span className="ws-ho-clock">{slide.minutes ?? '?'} MIN</span>
-        <span
-          className={
-            'ws-ho-stamp' +
-            (slide.status?.startsWith('tested') ? ' ws-ho-tested' : '')
-          }
-        >
-          {slide.status ?? 'PLACEHOLDER'}
-        </span>
+        {slide.status && (
+          <span
+            className={
+              'ws-ho-stamp' +
+              (slide.status.startsWith('tested') ? ' ws-ho-tested' : '')
+            }
+          >
+            {slide.status}
+          </span>
+        )}
         {slide.exercise && (
           <div className="ws-ho-repo">
             <span className="narrative-kicker">FOLLOW IN THE REPO</span>
@@ -2047,6 +2097,8 @@ export function Visual({ id, slide, onJump }: Props) {
       return <TraceFlow />
     case 'agent-signup':
       return <AgentSignup />
+    case 'custom-tool':
+      return <CustomTool />
     case 'intro-mehdi':
     case 'intro-jacob':
       return <Person id={id} />

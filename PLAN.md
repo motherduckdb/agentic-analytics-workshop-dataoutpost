@@ -192,21 +192,25 @@ another definition. With it, the agent called `get_query_guide` first and matche
 That org also holds a private "workshop-test gloamwick metrics" guide from the 2026-11-02 run; the
 guided run read it too but did not use it for conversion.
 
+### Runs on 2026-11-03
+
+- Level 3 server over HTTP (`uv run server.py`, `http://127.0.0.1:8000/mcp`) with a FastMCP client:
+  six tools listed, `live_ops_impact` returned real Gloamwick rows from MotherDuck, the question log
+  was written, and with `TRACE_TO_MOTHERDUCK=1` the call became an `execute_tool` span (932 ms).
+- Level 4 `agent.py` on `openai/gpt-6-luna`, the workshop key's default: the workshop question in
+  38 s, 3 steps, 7 tool calls, right answer (boss rework: Android D7 14.48% to 10.68%; chest video:
+  ARPDAU +2 cents). Traced to a local DuckDB file: 12 spans, 20.6k input and 3.1k output tokens,
+  $0.0028. Fix found on the way: spans are flushed every second, since a server stopped with
+  SIGTERM skips atexit.
+
 ### Not tested yet
 
-- The rewritten prompts (2026-11-03) at every level.
+- The rewritten prompts at levels 1 and 2C, and the setup prompt run by an agent on a clean machine
+  (uv script, MotherDuck installer without its token prompt, PATH line in the profile).
 - Level 1 on the DuckDB 1.5.6 CLI. The tested run used the 1.4 CLI.
-- The setup from a clean machine: uv script, MotherDuck installer (token prompt, PATH line in the
-  profile), an agent installer, the init prompt.
+- Adding the level 3 server with `claude mcp add --transport http` and `codex mcp add --url`.
 - Codex anywhere: skills in `.agents/skills` and `codex mcp add` come from the Codex docs.
-- Level 3 started from `mcp.json` with `--strict-mcp-config`.
-- The tracing bonus against MotherDuck and on a real model run. Tested 2026-11-03 with a local
-  DuckDB file: a simulated level 4 run (agent, chat with usage, two tool calls, one failing) and the
-  level 3 server in-process (tools still list, a failing call is recorded as an ERROR span).
-- Hands-on 2C (Dive and theme), and whether `${TRACE_TO_MOTHERDUCK:-0}` expands in Claude Code's
-  `--mcp-config` file.
-- Level 4 on `openai/gpt-6-luna`, the workshop key's default. The tested run used Gemini 3.8 Flash,
-  which the workshop key does not allow.
+- Tracing written to MotherDuck itself (tested against a local DuckDB file), and the Dive prompt.
 - The Flight stretch in level 2.
 
 ## Chapter 1 in detail: what an agent is

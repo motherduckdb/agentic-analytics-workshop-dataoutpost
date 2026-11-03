@@ -7,7 +7,8 @@
 It follows the MotherDuck white-label guide: forward a few tools, rename them,
 rewrite their descriptions, add your own tool, and log every question.
 
-Run it as a stdio MCP server:   uv run server.py
+Run it:   uv run server.py      serves MCP on http://127.0.0.1:8000/mcp (PORT changes the port)
+          uv run server.py --stdio   speaks MCP on stdin/stdout instead (level 4's agent.py uses this)
 The MotherDuck token comes from MOTHERDUCK_TOKEN and never reaches the agent.
 Bonus: TRACE_TO_MOTHERDUCK=1 writes one OpenTelemetry span per tool call to MotherDuck (traces.py).
 """
@@ -122,5 +123,9 @@ async def live_ops_impact(question: str, days: int = 14) -> Any:
 
 
 if __name__ == "__main__":
-    print(f"company-data MCP server, upstream {UPSTREAM}, database {DATABASE}", file=sys.stderr)
-    mcp.run()
+    if "--stdio" in sys.argv:
+        mcp.run(transport="stdio", show_banner=False)
+    else:
+        port = int(os.environ.get("PORT", "8000"))
+        print(f"company-data MCP server on http://127.0.0.1:{port}/mcp, database {DATABASE}", file=sys.stderr)
+        mcp.run(transport="http", host="127.0.0.1", port=port, path="/mcp")
