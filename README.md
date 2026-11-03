@@ -43,9 +43,11 @@ and answer keys for grading. The exercises were tested on Gloamwick Studios
 
 ## Slides
 
-**View the slides:** [mehdio.com/talks/next-data-stack-has-no-ui](https://mehdio.com/talks/next-data-stack-has-no-ui)
-(live once the deck is merged on mehdio.com). Until then, use the
-[preview build](https://mehdio-website-git-feat-no-ui-c25723-mehdimotherducks-projects.vercel.app/talks/next-data-stack-has-no-ui/).
+**View the slides:** [symmetrical-barnacle-rkwr531.pages.github.io](https://symmetrical-barnacle-rkwr531.pages.github.io/)
+(GitHub Pages, private: you need access to this repo). Every push to `main` that touches
+`slides/` rebuilds it. The public copy will be
+[mehdio.com/talks/next-data-stack-has-no-ui](https://mehdio.com/talks/next-data-stack-has-no-ui)
+once the deck is merged on mehdio.com.
 
 The source of truth is [`slides/`](slides/) in this repo. The mehdio.com deck
 (`src/talks/no-ui-data-stack/` in the mehdio-website repo) is a copy: edit here, then copy
