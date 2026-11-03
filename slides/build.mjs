@@ -39,6 +39,16 @@ async function checkExercises() {
         if (!readme.includes(text)) problems.push(`${s.id}: not in the README: ${text}`)
       }
     }
+    // Same time box, and the same "done when" (case, backticks and line breaks aside).
+    const time = readme.match(/^Time: (\d+) minutes/m)?.[1]
+    if (s.minutes && Number(time) !== s.minutes) {
+      problems.push(`${s.id}: ${s.minutes} min on the slide, ${time ?? 'no time'} in the README`)
+    }
+    const norm = t => t.replace(/`/g, '').replace(/\s+/g, ' ').trim().replace(/\.$/, '').toLowerCase()
+    const done = readme.split(/^## Done when$/m)[1]?.split(/^## /m)[0] ?? ''
+    if (s.doneWhen && norm(done) !== norm(s.doneWhen)) {
+      problems.push(`${s.id}: "done when" differs:\n    slide:  ${s.doneWhen}\n    README: ${done.trim()}`)
+    }
   }
   if (problems.length) {
     console.error('Hands-on slides and exercise READMEs disagree:\n  ' + problems.join('\n  '))

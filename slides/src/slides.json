@@ -134,7 +134,7 @@
     "title": "What the model sees on every turn",
     "kind": "custom",
     "section": "01 · THE AGENT",
-    "notes": "The model is stateless: every API call sends the whole window again, and the model keeps nothing between calls. What products call memory is text the harness stores outside the window and loads back into it. Claude Code has two kinds: CLAUDE.md files, loaded whole at session start, and auto memory, where the first 200 lines (or 25 KB) of MEMORY.md load at session start and topic files are read on demand (code.claude.com/docs/en/memory). Anthropic's API memory tool is a directory of files the model reads and writes through tool calls, on the client side; context editing clears old tool results and compaction summarizes old turns (platform.claude.com docs, memory tool and context editing). So memory is not free: whatever it loads is paid on every turn, like everything else in the window. Tool results are usually the biggest part, which is why returning 10,000 rows hurts. In Claude Code, /context shows the real split, including which memory files loaded. Proportions on the slide are illustrative.",
+    "notes": "The model is stateless: every API call sends the whole window again, and you pay for all of it on every turn. That is the one thing to remember from this slide. Tool results are usually the biggest part, which is why returning 10,000 rows hurts. Memory files (CLAUDE.md, AGENTS.md, Claude Code's auto memory) are part of the window too: the harness loads them at session start (code.claude.com/docs/en/memory), so they cost tokens like the rest. In Claude Code, /context shows the real split. Proportions on the slide are illustrative.",
     "theme": "sand",
     "source": "https://code.claude.com/docs/en/memory",
     "sourceLabel": "CLAUDE CODE DOCS · MEMORY · CONTEXT WINDOWS"
@@ -165,7 +165,7 @@
     "codeLabel": "PYTHON / .claude/hooks/guard.py · PreToolUse",
     "language": "loop",
     "code": "# runs before every tool call, with the call as JSON on stdin\nif is_cloud_delete(call) and not teardown_unlocked():\n    print(\"Cloud deletes are locked. Ask the human.\", file=sys.stderr)\n    exit(2)      # 2 = block the call, and the model reads why",
-    "notes": "Simplified from the guard hook in parked/duckoffee (tested). In Claude Code, a PreToolUse hook that exits with code 2 blocks the tool call and its stderr goes back to the model. The model cannot talk its way past it. This is a harness rule. Level 2 adds the strongest layer, the database.",
+    "notes": "Simplified from a guard hook in the earlier Duckoffee kit (tested, now only in the git history). In Claude Code, a PreToolUse hook that exits with code 2 blocks the tool call and its stderr goes back to the model. The model cannot talk its way past it. This is a harness rule. Level 2 adds the strongest layer, the database.",
     "theme": "sand",
     "source": "https://code.claude.com/docs/en/hooks",
     "sourceLabel": "CLAUDE CODE DOCS · HOOKS"
@@ -615,7 +615,7 @@
         "text": "Change the harness: MAX_STEPS=2, or edit SYSTEM in agent.py. What breaks first?"
       }
     ],
-    "doneWhen": "your agent answers on the model you picked, and you can say which tools it called.",
+    "doneWhen": "your agent answers the question on the model you picked, and you can say which tools it called.",
     "needs": ["the workshop key", "uv", "MOTHERDUCK_TOKEN"],
     "notes": "Steps match exercises/4-custom-agent/README.md. Tested 2026-11-03 on openai/gpt-6-luna, the workshop key's default: the workshop question answered in 38 s, 3 steps, 7 tool calls (list_company_tables, how_we_count, live_ops_impact, read_definition, describe_table x2, ask_data). It found the boss rework (Android D7 14.48% to 10.68%, iOS flat) and the chest video (ARPDAU +2 cents on both platforms); one table cell had a garbled unit, Luna is less careful with formatting than Sonnet. With TRACE_TO_MOTHERDUCK=1 the run wrote 12 spans: 20.6k input and 3.1k output tokens, $0.0028. agent.py starts the level 3 server itself, over stdio (server.py --stdio). The OpenRouter key never reaches the server, the MotherDuck token never reaches the model.",
     "exercise": "exercises/4-custom-agent"
@@ -669,6 +669,6 @@
     "kind": "custom",
     "theme": "sand",
     "section": "THANK YOU",
-    "notes": "Leave up during Q&A. TODO: QR code to the repo once it is published."
+    "notes": "Leave up during Q&A. Ask everyone to fill the 3-minute survey: forms.gle/8uFGZP6pFDuZkafU6 (the link is clickable on the slide)."
   }
 ]
