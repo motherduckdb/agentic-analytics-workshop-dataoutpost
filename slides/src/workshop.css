@@ -1894,3 +1894,57 @@
   line-height: 1.3;
   padding: 3px 10px;
 }
+
+/* Agenda: the builder duck next to each hands-on badge */
+.ws-agenda-ho-row {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.ws-agenda-ho-row .ws-agenda-ho {
+  margin-top: 0;
+}
+.ws-agenda-duck {
+  width: 62px;
+  height: auto;
+}
+.ws-agenda-ho-row {
+  padding-top: 10px;
+}
+.ws-agenda-ho-row .ws-agenda-ho {
+  flex: none;
+  white-space: nowrap;
+}
+.ws-agenda-ho-row .ws-agenda-duck {
+  width: 52px;
+}
+
+/* Thanks: the survey link */
+.ws-survey {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0 10px;
+  padding: 18px 26px;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--sun);
+  border: 3px solid var(--ink);
+  box-shadow: -9px 9px 0 var(--ink);
+}
+.ws-survey b {
+  font-size: 44px;
+  line-height: 1.1;
+}
+.ws-survey span {
+  font:
+    24px AeonikMono,
+    monospace;
+}
+.ws-survey:hover {
+  background: #fff;
+}
+.ws-slide:has(.ws-thanks) > h1 {
+  display: none;
+}

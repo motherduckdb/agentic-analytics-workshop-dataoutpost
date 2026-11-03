@@ -53,7 +53,8 @@ agenda, and its speaker notes (press N) carry the same details per slide.
   context, access and trust. So the workshop teaches the fundamentals of an analytics agent and maps
   each one to a MotherDuck feature, with a short hands-on per fundamental.
 - **The dataset comes from duckgen** (public S3, with answer keys) instead of the Duckoffee raw
-  files built earlier. Duckoffee is kept in `parked/duckoffee/` for a longer data engineering format.
+  files built earlier. The Duckoffee kit was removed from the repo on 2026-11-03; it stays in the git
+  history for a longer data engineering format.
 - **Hands-on runs in a hosted generator** after chapter 1, so nobody installs or deploys anything
   past the first 15 minutes. People tweak the components of their agent, paste a temporary key and
   get a unique link.
@@ -77,7 +78,7 @@ level one more part of the agent becomes the participant's own. Every level ends
 
 | Time | Part | What becomes yours | MotherDuck / DuckDB features | Hands-on |
 |---|---|---|---|---|
-| 0:00 | Intro | | duckgen, the minter | 0. Setup: workshop key from the minter, MotherDuck token, tools (send before the day) |
+| 0:00 | Intro | | duckgen, the minter | 0. Setup: a coding agent, a MotherDuck token, one prompt installs the rest (send before the day) |
 | 0:06 | 01 The agent | | | Talk only. Sourced definitions, loop, anatomy, levels map |
 | 0:18 | 02 The analytics job | | Flights, Dives, Guides, storage, MCP apps | Guess slides |
 | 0:26 | Level 1 · Local | a skill file, data on your laptop | DuckDB CLI (agent mode in 2.0, shown) | 1. Load Gloamwick from S3 into local DuckDB, answer the workshop question, local HTML dashboard |
@@ -149,8 +150,7 @@ key with $5 of credit, valid Nov 3 to Nov 30 2026, for three models: `anthropic/
 This repo (`motherduckdb/agentic-analytics-workshop-dataoutpost`) is the source of truth for the
 plan, the exercises and the slides. The mehdio-website deck (`src/talks/no-ui-data-stack/`, output
 at `/talks/next-data-stack-has-no-ui`, PR #38 for previews) is a copy for hosting: edit
-`slides/` here, then copy it over. Last synced 2026-11-03. `dive-deck/` holds the deck rebuilt
-as a MotherDuck Dive on live Gloamwick data.
+`slides/` here, then copy it over. Last synced 2026-11-03.
 
 ## Exercise runs
 
@@ -267,7 +267,7 @@ layer. Rules written in any of these five are text the model can ignore, which s
 
 **The harness.** Permissions (allow, ask, deny), hooks (code before and after each tool call that
 can block it), sandbox, memory files, context compaction, subagents. Same model, different harness,
-different agent. Example on the slides: the PreToolUse guard from `parked/duckoffee` that blocks
+different agent. Example on the slides: a PreToolUse guard from the earlier Duckoffee kit that blocks
 cloud deletes until a human unlocks teardown (exit code 2 blocks the call and the model reads why).
 
 **What makes a full agent.** Six checks, one per chapter: it picks its next step and acts through
@@ -310,32 +310,6 @@ viewer (`view_flight_run`, opened from `run_flight`, enabled for everyone in pro
 history). Agent traces have no dedicated app: we store them in MotherDuck and read them with a Dive
 (chapter 6). Demo idea: run a Flight from chat, watch it in the Flight Explainer, then open a Dive.
 
-## Earlier demo dataset: duckgen café
-
-Not used in the exercises since 2026-11-03 (see Gloamwick above). Kept for reference.
-
-
-- Release `cafe-juniper-decisions`, S tier (about 100 MB):
-  `s3://us-prd-motherduck-open-datasets/duckgen/cafe-juniper-decisions/20261025-a5155411-s-r1/`.
-  An M tier exists (`20261026-7ea103ae-m-r1`).
-- Tables: `shops`, `menu_items`, `item_daily`, `pilot_customer_daily`, `neighborhoods`, plus the
-  derived `neighborhood_demand_daily`.
-- Checked on the S tier: 1,764 shops, 7,726,320 `item_daily` rows from 2024-10-07 to 2026-10-06,
-  176,400 pilot customers. Enough shops for a row filter per participant.
-- Four questions with answer keys (`answer-keys.json` next to the Parquet): weekdays losing money
-  to waste or stockouts, requested products missing from the menu, whether the loyalty pilot paid
-  off, which neighborhood to expand into.
-- Context traps already in the data: money is integer USD cents, Sunday rows exist with zero
-  activity, pilot customer-days include zero visits, pilot visits are a separate sample and must not
-  be added to shop revenue.
-- `guide.md` ships with each release but contains the answer SQL and the planted stories. We write
-  our own guide with definitions only and keep the answer keys for grading.
-- No personal data in this dataset. Column security uses the cost columns instead
-  (`unit_cost_cents`, `food_cost_cents`, `contribution_cents`, `commission_percent`): shop managers
-  see revenue, HQ keeps the margins.
-- 61 duckgen releases sit in the bucket, 24 of them with a `guide.md`. duckgen itself is internal
-  (Google sign-in).
-
 ## How guides reach an agent today
 
 Read from `mcp-server` on `origin/main` of the mono repo (fetched 2026-10-26).
@@ -371,7 +345,7 @@ Source: [Agent Mode in the DuckDB CLI](https://duckdb.org/2026/10/09/agent-mode)
   runs correct, slightly more turns.
 - Needs a 2.0 binary. Checked 2026-11-03: MotherDuck rejects 2.0 clients ("not yet supported by
   MotherDuck. The latest supported version is v1.5.6"). So every hands-on uses the 1.5.6 CLI, and
-  agent mode is a talk slide only. The repo pins DuckDB 1.5.x in `pyproject.toml`.
+  agent mode is not in the hands-on.
 - Setup installs 1.5.6 with `curl -s https://install.motherduck.com | sh`. That script reads
   `api.motherduck.com/latest_supported_duckdb_version.txt` (1.5.6 on 2026-11-03), installs that
   DuckDB CLI, the MotherDuck extension and the `motherduck` CLI, and checks the connection when a
@@ -464,7 +438,7 @@ prompt, agent B runs as a channel lead through the secure view. The room shouts 
 - The generator is one hosted app with unique links. No per-participant deploy.
 - The devrel org holds the shares, secure views and agent service accounts.
 - The café dataset stays as duckgen ships it. No extra personal data table.
-- Duckoffee is parked.
+- Duckoffee and the Dive copy of the deck were removed on 2026-11-03 (both in the git history).
 - The abstract can change.
 - One dataset for every exercise: Gloamwick Studios. No draw (2026-11-03).
 - Workshop keys come from the minter (OpenRouter, three models, $5 each).
@@ -514,7 +488,7 @@ prompt, agent B runs as a channel lead through the secure view. The room shouts 
 - [ ] Rerun every hands-on with the 2026-11-03 prompts on a workshop key, including `agent.py` on
       GPT-6 Luna, and 2A/2B in claude.ai and in Claude Code on the workshop key.
 - [ ] Capture the traces screenshot for the MCP apps slide (the Dive and Flight ones are in).
-- [ ] Sync `dive-deck/` and the mehdio.com copy with the new slides.
+- [ ] Sync the mehdio.com copy with the new slides.
 - [ ] Full dry run with timings.
 - [ ] Update the abstract.
 

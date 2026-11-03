@@ -22,8 +22,9 @@ This repo prepares a workshop. It is not the participant repo yet. Read [PLAN.md
 
 - One dataset for every exercise: Gloamwick Studios (`gaming-gloamwick-liveops`, S tier).
 - Each hands-on slide (`ho-*` in `slides.json`) names its folder in `exercise`. That folder's
-  README has the same numbered steps, and every `prompt` and `cmd` on the slide word for word.
-  `npm run build` fails when they disagree. Change both together.
+  README has the same numbered steps, every `prompt` and `cmd` on the slide word for word, the
+  same time ("Time: N minutes") and the same "Done when". `npm run build` fails when they
+  disagree. Change both together.
 - No answers, answer keys or duckgen `guide.md` under `exercises/`: agents run there and can read
   it. Expected answers live in the speaker notes and PLAN.md.
 
@@ -35,8 +36,3 @@ This repo prepares a workshop. It is not the participant repo yet. Read [PLAN.md
 ## Secrets
 
 - Never print or commit a MotherDuck token or an AI key. `.env` files are ignored.
-
-## parked/duckoffee
-
-Self-contained and set aside. Its own `AGENTS.md` and `.claude/` hooks apply only when that folder
-is opened as the project. See its README.

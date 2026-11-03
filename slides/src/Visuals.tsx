@@ -225,19 +225,26 @@ function Agenda({ onJump }: { onJump: Props['onJump'] }) {
             <h2>{c.title}</h2>
             <p>{c.feature}</p>
             {c.handsOn && (
-              <span
-                className="ws-agenda-ho"
-                onClick={e => {
-                  e.stopPropagation()
-                  onJump(c.handsOn!)
-                }}
-              >
-                HANDS-ON ·{' '}
-                {[c.handsOn, ...(c.alsoHandsOn ?? [])].reduce(
-                  (sum, h) => sum + (minutes(h) ?? 0),
-                  0
-                )}{' '}
-                MIN
+              <span className="ws-agenda-ho-row">
+                <img
+                  className="ws-agenda-duck"
+                  src="assets/duck-hands-on.png"
+                  alt=""
+                />
+                <span
+                  className="ws-agenda-ho"
+                  onClick={e => {
+                    e.stopPropagation()
+                    onJump(c.handsOn!)
+                  }}
+                >
+                  HANDS-ON ·{' '}
+                  {[c.handsOn, ...(c.alsoHandsOn ?? [])].reduce(
+                    (sum, h) => sum + (minutes(h) ?? 0),
+                    0
+                  )}{' '}
+                  MIN
+                </span>
               </span>
             )}
           </button>
@@ -389,39 +396,6 @@ function Loop() {
             no tool call means no next turn
           </span>
         </div>
-      </div>
-    </div>
-  )
-}
-
-function AgentMode() {
-  return (
-    <div className="ws-visual ws-mode">
-      <div className="ws-term">
-        <span className="narrative-kicker">FOR HUMANS</span>
-        <pre>{`┌─────────┬───────────┐
-│ weekday │ waste_usd │
-│ varchar │  double   │
-├─────────┼───────────┤
-│ Mon     │   1234.50 │
-│ Tue     │    987.25 │
-└─────────┴───────────┘`}</pre>
-      </div>
-      <div className="ws-term">
-        <span className="narrative-kicker">FOR AGENTS</span>
-        <pre>{`| weekday | waste_usd |
-|---------|-----------|
-| Mon     | 1234.50   |
-| Tue     | 987.25    |`}</pre>
-        <ul>
-          <li>errors as JSON</li>
-          <li>says when a result is cut off</li>
-          <li>cost estimate before long queries</li>
-        </ul>
-      </div>
-      <div className="ws-stat">
-        <strong>−59%</strong>
-        <span>DuckDB output the agent reads, TPC-H, same answers</span>
       </div>
     </div>
   )
@@ -918,10 +892,9 @@ function ContextWindow() {
       </div>
       <div className="ws-window-notes">
         <p>
-          <b>Context ≠ memory.</b> Memory is a file the harness loads back into
-          the window, and you pay for the window on every turn.
+          <b>Watch your token bill.</b> Everything in the window is paid again
+          on every turn.
         </p>
-        <p className="ws-small">Proportions are illustrative.</p>
       </div>
     </div>
   )
@@ -1295,12 +1268,18 @@ function FullAgent({ onJump }: { onJump: Props['onJump'] }) {
 
 function Thanks() {
   return (
-    <div className="ws-visual ws-hero">
+    <div className="ws-visual ws-hero ws-thanks">
       <div>
         <h2>THANKS!</h2>
-        <p>
-          Keep your agent link for 7 days. Bring your own key to keep it longer.
-        </p>
+        <a
+          className="ws-survey"
+          href="https://forms.gle/8uFGZP6pFDuZkafU6"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <b>Survey, 3 min!! 🙏</b>
+          <span>forms.gle/8uFGZP6pFDuZkafU6 ↗</span>
+        </a>
         <p className="ws-names">Mehdi Ouazza · Jacob Matson · MotherDuck</p>
       </div>
       <img src="assets/duck-thinking.svg" alt="MotherDuck duck thinking" />
@@ -1709,55 +1688,6 @@ function SecureAnim() {
   )
 }
 
-// Level 2 has two tracks: the remote MCP server, or a skill file and the DuckDB CLI.
-function L2Paths() {
-  const rows: [string, string, string][] = [
-    ['Reaches MotherDuck', 'api.motherduck.com/mcp', 'motherduck query'],
-    [
-      'Knows what to do from',
-      'tool descriptions, server instructions',
-      'the skill file, motherduck --help'
-    ],
-    [
-      'Guides',
-      'get_query_guide · create_guide',
-      'motherduck guide pull · push'
-    ],
-    ['Dives', 'save_dive · view_dive', 'motherduck dive guide · push'],
-    [
-      'Works in',
-      'any MCP client: Claude, ChatGPT, Cursor',
-      'any coding agent with a shell'
-    ]
-  ]
-  return (
-    <div className="ws-visual ws-l2paths">
-      <table className="ws-table">
-        <thead>
-          <tr>
-            <th />
-            <th>A · Remote MCP</th>
-            <th>B · Skill file + MotherDuck CLI</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(r => (
-            <tr key={r[0]}>
-              <td>{r[0]}</td>
-              <td>
-                <code>{r[1]}</code>
-              </td>
-              <td>
-                <code>{r[2]}</code>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
 const REPO = 'https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost'
 
 // Copy a prompt or a command, so nobody types from the projector.
@@ -2057,8 +1987,6 @@ export function Visual({ id, slide, onJump }: Props) {
       return <McpApps />
     case 'full-agent':
       return <FullAgent onJump={onJump} />
-    case 'agent-mode':
-      return <AgentMode />
     case 'guides-pull':
       return <GuidesPull />
     case 'knobs':
@@ -2104,8 +2032,6 @@ export function Visual({ id, slide, onJump }: Props) {
       return <Person id={id} />
     case 'rules':
       return <Rules />
-    case 'l2-paths':
-      return <L2Paths />
     default:
       return null
   }
