@@ -15,6 +15,38 @@ const title = 'The Next Data Stack Has No UI · MotherDuck workshop'
 const description =
   'Build an analytics agent end to end, and map each fundamental to MotherDuck. Mehdi Ouazza and Jacob Matson.'
 
+// Hands-on slides and exercise READMEs must agree: same number of steps, and every prompt and
+// command on the slide appears word for word in the README. People copy from the README.
+async function checkExercises() {
+  const slides = JSON.parse(await fs.readFile(path.join(root, 'src/slides.json'), 'utf8'))
+  const problems = []
+  for (const s of slides.filter(x => x.exercise)) {
+    const readme = await fs
+      .readFile(path.join(root, '..', s.exercise, 'README.md'), 'utf8')
+      .catch(() => null)
+    if (!readme) {
+      problems.push(`${s.id}: ${s.exercise}/README.md not found`)
+      continue
+    }
+    const section = readme.split(/^## Steps$/m)[1]?.split(/^## /m)[0] ?? ''
+    const count = (section.match(/^\d+\. /gm) ?? []).length
+    if (count !== (s.steps ?? []).length) {
+      problems.push(`${s.id}: ${s.steps?.length ?? 0} steps on the slide, ${count} in the README`)
+    }
+    for (const st of s.steps ?? []) {
+      if (typeof st === 'string') continue
+      for (const text of [st.prompt, ...(st.cmd ?? [])].filter(Boolean)) {
+        if (!readme.includes(text)) problems.push(`${s.id}: not in the README: ${text}`)
+      }
+    }
+  }
+  if (problems.length) {
+    console.error('Hands-on slides and exercise READMEs disagree:\n  ' + problems.join('\n  '))
+    process.exit(1)
+  }
+}
+await checkExercises()
+
 await fs.mkdir(out, { recursive: true })
 await fs.cp(path.join(root, 'assets'), path.join(out, 'assets'), { recursive: true })
 await fs.writeFile(

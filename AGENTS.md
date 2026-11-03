@@ -18,6 +18,15 @@ This repo prepares a workshop. It is not the participant repo yet. Read [PLAN.md
   mehdio-website) hosts it: after edits, copy `slides/src/` and `slides/assets/` there. Its
   `Deck.tsx` imports `../jev-analytics/deck.css` instead of `./deck.css`.
 
+## Exercises
+
+- One dataset for every exercise: Gloamwick Studios (`gaming-gloamwick-liveops`, S tier).
+- Each hands-on slide (`ho-*` in `slides.json`) names its folder in `exercise`. That folder's
+  README has the same numbered steps, and every `prompt` and `cmd` on the slide word for word.
+  `npm run build` fails when they disagree. Change both together.
+- No answers, answer keys or duckgen `guide.md` under `exercises/`: agents run there and can read
+  it. Expected answers live in the speaker notes and PLAN.md.
+
 ## Facts
 
 - When a slide or PLAN.md states a product fact (tool names, limits, plans, versions), it must come

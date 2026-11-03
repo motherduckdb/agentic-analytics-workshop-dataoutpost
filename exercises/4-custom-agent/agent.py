@@ -1,13 +1,17 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["fastmcp==4.0.3", "httpx"]
+# dependencies = ["fastmcp==4.0.3", "httpx", "opentelemetry-sdk==1.45.2", "duckdb==1.5.6"]
 # ///
 """Level 4: the whole agent. Your loop, your model, your tools.
 
-The model is any OpenRouter model (OPENROUTER_API_KEY, MODEL).
+The model is any OpenRouter model (OPENROUTER_API_KEY, MODEL). The workshop key allows
+openai/gpt-6-luna (default), anthropic/claude-haiku-5.5 and anthropic/claude-sonnet-5.5.
 The tools come from your level 3 MCP server, started as a subprocess.
 
     uv run agent.py "Which live-ops changes moved retention and ARPDAU?"
+
+Bonus: TRACE_TO_MOTHERDUCK=1 writes the run as OpenTelemetry GenAI spans to MotherDuck:
+invoke_agent, then chat (tokens, cost) and execute_tool (see ../3-custom-mcp/traces.py).
 """
 
 import asyncio
@@ -20,10 +24,15 @@ import httpx
 from fastmcp import Client
 from fastmcp.client.transports import StdioTransport
 
-MODEL = os.environ.get("MODEL", "google/gemini-3.8-flash")
+MODEL = os.environ.get("MODEL", "openai/gpt-6-luna")
 MAX_STEPS = int(os.environ.get("MAX_STEPS", "12"))
 SERVER = Path(__file__).parent.parent / "3-custom-mcp" / "server.py"
 SYSTEM = "You answer business questions with the tools you have. Show the numbers and the SQL you relied on."
+
+sys.path.insert(0, str(SERVER.parent))
+import traces  # noqa: E402  (the bonus tracing, shared with the level 3 server)
+
+TRACER = traces.setup("gloamwick-agent")
 
 
 def as_openai_tool(tool) -> dict:
@@ -34,36 +43,48 @@ def as_openai_tool(tool) -> dict:
 
 
 async def model(messages: list, tools: list) -> dict:
-    async with httpx.AsyncClient(timeout=120) as http:
-        r = await http.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
-            json={"model": MODEL, "messages": messages, "tools": tools},
-        )
-        r.raise_for_status()
-        return r.json()["choices"][0]["message"]
+    with TRACER.start_as_current_span(f"chat {MODEL}") as span:
+        span.set_attribute("gen_ai.operation.name", "chat")
+        span.set_attribute("gen_ai.request.model", MODEL)
+        async with httpx.AsyncClient(timeout=120) as http:
+            r = await http.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"},
+                json={"model": MODEL, "messages": messages, "tools": tools},
+            )
+            r.raise_for_status()
+            data = r.json()
+        traces.usage(span, data)  # tokens and cost, from OpenRouter's usage object
+        traces.ok(span)
+        return data["choices"][0]["message"]
 
 
 async def main(question: str) -> None:
     # The server gets the MotherDuck token. The model never sees it.
-    env = {k: v for k, v in os.environ.items() if k != "OPENROUTER_API_KEY"}
+    # The agent traces the whole run, so the server does not trace a second time.
+    env = {k: v for k, v in os.environ.items() if k not in ("OPENROUTER_API_KEY", "TRACE_TO_MOTHERDUCK")}
     server = StdioTransport(command="uv", args=["run", "-q", str(SERVER)], env=env)
-    async with Client(server) as mcp:
-        tools = [as_openai_tool(t) for t in await mcp.list_tools()]
-        messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": question}]
-        for step in range(MAX_STEPS):
-            reply = await model(messages, tools)
-            messages.append(reply)
-            if not reply.get("tool_calls"):
-                print(reply.get("content"))
-                return
-            for call in reply["tool_calls"]:
-                name, args = call["function"]["name"], json.loads(call["function"]["arguments"] or "{}")
-                print(f"[step {step + 1}] {name}({json.dumps(args)[:120]})", file=sys.stderr)
-                result = await mcp.call_tool(name, args, raise_on_error=False)
-                text = "\n".join(c.text for c in result.content if hasattr(c, "text"))
-                messages.append({"role": "tool", "tool_call_id": call["id"], "content": text[:20000]})
-        print(f"Stopped after {MAX_STEPS} steps without an answer.")
+    with traces.agent_span(TRACER, "gloamwick-agent", MODEL, question) as run:
+        async with Client(server) as mcp:
+            tools = [as_openai_tool(t) for t in await mcp.list_tools()]
+            messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": question}]
+            for step in range(MAX_STEPS):
+                reply = await model(messages, tools)
+                messages.append(reply)
+                if not reply.get("tool_calls"):
+                    print(reply.get("content"))
+                    traces.ok(run)
+                    return
+                for call in reply["tool_calls"]:
+                    name, args = call["function"]["name"], json.loads(call["function"]["arguments"] or "{}")
+                    print(f"[step {step + 1}] {name}({json.dumps(args)[:120]})", file=sys.stderr)
+                    with traces.tool_span(TRACER, name, question, args.get("sql"), call["id"]) as span:
+                        result = await mcp.call_tool(name, args, raise_on_error=False)
+                        traces.finish_tool(span, not getattr(result, "is_error", False))
+                    text = "\n".join(c.text for c in result.content if hasattr(c, "text"))
+                    messages.append({"role": "tool", "tool_call_id": call["id"], "content": text[:20000]})
+            print(f"Stopped after {MAX_STEPS} steps without an answer.")
+            traces.fail(run, "max_steps")
 
 
 if __name__ == "__main__":

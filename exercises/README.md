@@ -1,52 +1,58 @@
 # Exercises
 
-One folder per level. All four were run end to end on 2026-11-02 against Gloamwick Studios, a
-duckgen dataset (`gaming-gloamwick-liveops`, S tier), with the question "Which live-ops changes
-moved retention and ARPDAU?".
+One folder per hands-on. Each folder has a README with the same numbered steps and the same
+prompts as its slide. Follow the README: you can copy from it, not from the projector.
 
-Keys come from the environment: `OPENROUTER_API_KEY` and `MOTHERDUCK_TOKEN`. Neither is written to
-a file, and neither reaches the model.
+You do not need to clone this repo before level 3. Levels 1 and 2 link to the two files they use
+(the level 1 skill and the level 2 guide). Level 3 clones it for the MCP server and the agent loop.
 
-## Claude Code on the workshop key
-
-Claude Code runs on an OpenRouter key through OpenRouter's Anthropic-compatible endpoint:
-
-```sh
-export ANTHROPIC_BASE_URL=https://openrouter.ai/api
-export ANTHROPIC_AUTH_TOKEN="$OPENROUTER_API_KEY"
-export ANTHROPIC_API_KEY=""
-export ANTHROPIC_MODEL=anthropic/claude-sonnet-5.5
-export ANTHROPIC_SMALL_FAST_MODEL=anthropic/claude-haiku-5.5
-```
-
-## Levels
-
-| Level | Folder | Run | Measured |
+| Hands-on | Folder | Time | You build |
 |---|---|---|---|
-| 1 Local | [`1-local/`](1-local/) | `claude` in the folder, with the skill. Needs the DuckDB CLI. | 16 turns, 3.4 min, $0.38 |
-| 2 Remote MCP | [`2-remote-mcp/`](2-remote-mcp/) | `claude --mcp-config mcp.json` in the folder | 18 turns, 67 s, $0.22 |
-| 3 Custom MCP | [`3-custom-mcp/`](3-custom-mcp/) | `uv run server.py` as a stdio MCP server, then point the agent at it | 5 turns, 28 s, $0.07 |
-| 4 Custom agent | [`4-custom-agent/`](4-custom-agent/) | `uv run agent.py "your question"`. `MODEL` picks any OpenRouter model. | 5 steps, 62 s |
+| 0 Setup | [`0-setup/`](0-setup/README.md) | 5 min | uv, DuckDB 1.5.6, the MotherDuck CLI and token, a coding agent, the [workshop key](https://motherduck.com/minter/w/next-data-stack-has-no-ui/) |
+| 1 Local | [`1-local/`](1-local/README.md) | 10 min | a local agent: your coding agent, the DuckDB CLI, one skill file |
+| 2A MotherDuck | [`2a-mcp/`](2a-mcp/README.md) | 5 min | your agent on the MotherDuck MCP server, one question with the share in the prompt |
+| 2B Guide | [`2b-guide/`](2b-guide/README.md) | 5 min | a MotherDuck guide, the same question again |
+| 2C Dive | [`2c-dive/`](2c-dive/README.md) | 5 min | a Dive over the answer, restyled from the theme gallery |
+| 3 Custom MCP | [`3-custom-mcp/`](3-custom-mcp/README.md) | 10 min | your own MCP server in front of MotherDuck's |
+| 4 Custom agent | [`4-custom-agent/`](4-custom-agent/README.md) | 10 min | your own loop, on the model you pick |
 
-Level 3 needs the share attached once in the MotherDuck account (level 2 does it). `COMPANY_DB`
-sets the database name, `QUESTION_LOG` the log file.
+## The data
 
-## Findings from the test runs
+Everyone works on **Gloamwick Studios**, a fictional mobile game from duckgen
+(`gaming-gloamwick-liveops`, S tier). It is the dataset all four levels were tested on.
 
-- All four levels found the same two changes: the level 12 boss rework cut Android D7 retention
-  (about 14.5% to 10.7%, iOS flat), and the rewarded chest video raised ARPDAU (about +2 cents).
-  The answer key `retention_shift` agrees on the boss rework.
-- The domain tool at level 3 cut turns from 16 to 18 down to 5, and cost by 3 to 5 times.
-- The level 4 run on Gemini read the guide written by the level 2 run and returned the same
-  numbers as level 2.
-- Without the MotherDuck token, the level 4 model invented table names instead of stopping. Good
-  material for observability.
-- Forward `get_guide` in the level 3 server, or the agent sees guide titles and cannot read them.
-- DuckDB in the Claude Code sandbox cannot parse the sandbox proxy URL. Run these outside it.
+- The game: Vanguard of Vellmark, a free-to-play squad battler on iOS and Android.
+- One year: 2024-10-01 to 2025-09-30. 8 tables: `players`, `sessions`, `purchases`,
+  `ad_impressions`, `ad_placements`, `daily_player_metrics`, `live_ops_events`,
+  `battle_pass_seasons`.
+- Level 1 reads it as Parquet on public S3:
+  `s3://us-prd-motherduck-open-datasets/duckgen/gaming-gloamwick-liveops/20261023-82cb146b-s-r1/tables/`
+- Levels 2 to 4 read it as a MotherDuck share:
+  `ATTACH 'md:_share/dg_gaming_gloamwick_liveops_s_82cb146b_r1/936b62ca-cd54-41a6-987d-f7b64215a773' AS gaming_gloamwick_liveops;`
 
-## Not tested yet
+## The questions
 
-- The Flight stretch in level 2.
-- The DuckDB 2.0 CLI. Level 1 used the 1.4 CLI, and the 2.0 Python package for the load timing.
-- opencode as the harness.
-- The draw page (level 0) and the generator around the level 4 loop.
+The workshop question, asked at every level so you can compare:
+
+> Which live-ops changes since spring 2025 moved day-7 retention or revenue per daily active user, and on which platform? Show the SQL.
+
+The guide question, asked before and after you write the guide at level 2:
+
+> Did the starter pack price cut lift payer conversion? Split by acquisition channel, before and after. Show the SQL.
+
+duckgen ships answer keys for both. The presenters grade against them. Do not point your agent at
+duckgen's `guide.md` or answer keys: they contain the answers.
+
+## Keys
+
+- The workshop key comes from the minter:
+  <https://motherduck.com/minter/w/next-data-stack-has-no-ui/>. $5 of credit, three models:
+  `anthropic/claude-sonnet-5.5`, `anthropic/claude-haiku-5.5`, `openai/gpt-6-luna`.
+- Keys are read from the environment (`ANTHROPIC_AUTH_TOKEN` or `OPENROUTER_API_KEY`, and
+  `MOTHERDUCK_TOKEN`). None is written to a file, and none reaches the model.
+
+## Status
+
+All four levels were run end to end on Gloamwick on 2026-11-02. The prompts were rewritten on
+2026-11-03 and not rerun yet. Measured runs, findings and what is not tested yet are in
+[PLAN.md](../PLAN.md#exercise-runs), for the presenters.

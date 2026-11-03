@@ -4,7 +4,7 @@ name: Slides
 on:
   push:
     branches: [main]
-    paths: [slides/**, .github/workflows/slides.yml]
+    paths: [slides/**, exercises/**, .github/workflows/slides.yml]
   workflow_dispatch:
 
 permissions:

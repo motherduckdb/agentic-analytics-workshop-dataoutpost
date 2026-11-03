@@ -1,6 +1,6 @@
 # Plan
 
-Status: draft, last updated 2026-11-01. Owners: Mehdi Ouazza and Jacob Matson (MotherDuck).
+Status: draft, last updated 2026-11-03. Owners: Mehdi Ouazza and Jacob Matson (MotherDuck).
 
 This file holds the original abstract, what we changed and why, the current agenda, the facts we
 checked, the decisions taken and what is still open. The draft deck in `slides/` follows the same
@@ -77,14 +77,17 @@ level one more part of the agent becomes the participant's own. Every level ends
 
 | Time | Part | What becomes yours | MotherDuck / DuckDB features | Hands-on |
 |---|---|---|---|---|
-| 0:00 | Intro | | duckgen API | 0. Draw your company: a duckgen dataset and one question |
+| 0:00 | Intro | | duckgen, the minter | 0. Setup: workshop key from the minter, MotherDuck token, tools (send before the day) |
 | 0:06 | 01 The agent | | | Talk only. Sourced definitions, loop, anatomy, levels map |
 | 0:18 | 02 The analytics job | | Flights, Dives, Guides, storage, MCP apps | Guess slides |
-| 0:26 | Level 1 · Local | a skill file, data on your laptop | DuckDB 2.0 agent mode | 1. Load your Parquet from S3 into local DuckDB, transform, answer, local HTML dashboard |
-| 0:40 | Level 2 · MotherDuck | data and compute in MotherDuck, anyone can query | remote MCP, Guides, Dives, Flights, Ducklings, shares, secure views | 2. Remote MCP, attach the share, write a guide, save a Dive, stretch: a Flight |
-| 1:00 | Level 3 · Your tools | the tool surface | white-label MCP pattern | 3. FastMCP proxy: forward 3 tools, rename, add a domain tool, log the question |
-| 1:12 | Level 4 · Your agent | the loop and the model | the generator, traces in MotherDuck | 4. Generator: pick model and tools, deploy a link, red team the neighbor, traces Dive |
+| 0:26 | Level 1 · Local | a skill file, data on your laptop | DuckDB CLI (agent mode in 2.0, shown) | 1. Load Gloamwick from S3 into local DuckDB, answer the workshop question, local HTML dashboard |
+| 0:40 | Level 2 · MotherDuck | data and compute in MotherDuck, anyone can query | remote MCP, Guides, Dives, Flights, Ducklings, shares, secure views | 2A. Connect your agent to the MotherDuck MCP, ask with the share in the prompt. 2B. Add a guide, ask again. 2C. A Dive, restyled from the theme gallery. Outro: can we manage permissions? (secure views) |
+| 1:00 | Level 3 · Your tools | the tool surface | white-label MCP pattern | 3. FastMCP proxy: forwarded tools, a domain tool, a question log, add your own tool |
+| 1:12 | Level 4 · Your agent | the loop and the model | traces in MotherDuck | 4. `agent.py` on the workshop key: run, read the steps, swap the model, change the harness. Generator and red team are presenter demos |
 | 1:24 | Wrap | | | Recap, discussion, references |
+
+Every hands-on slide mirrors the README of its `exercises/` folder: same numbered steps, same
+prompts word for word. The slide build checks it.
 
 Between level 1 and level 2, two slides adapted from the self-hosting DuckDB talk: the boxes you
 build to let anyone query (storage, compute, identity, access, context, pipelines, apps,
@@ -93,25 +96,53 @@ observability), then the same boxes run by MotherDuck.
 | Level | Harness | Model | Tools | Data + compute | Who can use it |
 |---|---|---|---|---|---|
 | 1 Local | Claude Code (or opencode + workshop key) | managed | DuckDB CLI + skill | laptop | you |
-| 2 MotherDuck | managed | managed | MotherDuck remote MCP + skill | MotherDuck | anyone you share with |
+| 2 MotherDuck | managed | managed | A: MotherDuck remote MCP + skill. B: MotherDuck CLI + skill | MotherDuck | anyone you share with |
 | 3 Your tools | managed | managed | your MCP server in front of MotherDuck's | MotherDuck | your users |
-| 4 Your agent | your loop | any model, workshop OpenRouter key | your tools | MotherDuck | anyone with the link |
+| 4 Your agent | your loop | GPT-6 Luna, Haiku 5.5 or Sonnet 5.5 on the workshop key | your tools | MotherDuck | anyone you give the script to |
 
 The six fundamentals from the previous plan are covered inside the levels: pipelines and storage in
 level 1, context, data apps and access in level 2 (sharing is what makes them necessary),
 observability in levels 3 and 4.
 
-### Exercises from the duckgen API
+### One dataset: Gloamwick Studios
 
-`https://motherduck.com/duckgen/api/v1` is public, read-only, no auth. `/datasets/` lists 19
-fictional companies (all `ready`, none `endorsed` on 2026-11-02), each with S3 Parquet
-(`tiers[].s3.prefix`, for level 1) and a MotherDuck share (`tiers[].motherduck.attach`, for level
-2). `/prompts/?slug=…&tier=s` returns questions with an `answerKey` pointer for grading. Each
-participant draws a company and a question. The café stays the shared demo on the projector, so
-the "same question, how many answers" comparison still works.
+Decided 2026-11-03: everyone works on the same duckgen dataset, Gloamwick Studios
+(`gaming-gloamwick-liveops`, S tier, release `20261023-82cb146b-s-r1`). No draw. It is the dataset
+all four levels were run on, and it ships four answer keys: `retention_shift`,
+`starter_conversion`, `arpdau_monthly`, `placement_revenue`.
 
-Rule: the agent never sees the answer key URL or the dataset `guide.md`. The guide contains the
-answers. The grader fetches the key on its side.
+- A fictional free-to-play squad battler (Vanguard of Vellmark), iOS and Android, 2024-10-01 to
+  2025-09-30. 8 tables, 12.4M rows. Parquet on public S3 for level 1, a MotherDuck share for levels
+  2 to 4.
+- Six live-ops events: winter festival (2024-12-15), level 12 boss rework (2025-04-10), starter
+  pack 4.99 to 1.99 (2025-05-01), rewarded chest video (2025-06-15), summer solstice event
+  (2025-07-01), harvest rally (2025-09-05).
+- Two questions. The workshop question at every level: "Which live-ops changes since spring 2025
+  moved day-7 retention or revenue per daily active user, and on which platform? Show the SQL."
+  The guide question at level 2: "Did the starter pack price cut lift payer conversion? Split by
+  acquisition channel, before and after. Show the SQL."
+- Expected answers, from the answer keys: the boss rework cut Android D7 retention from about 14.8%
+  to 10.9% in every channel, iOS flat at about 16.7%. The chest video raised ad ARPDAU (May to July
+  2025: Android 1.60 to 3.69 cents, iOS 2.07 to 4.79 cents) and cut iOS sessions from 600 s to
+  491 s. The starter pack reprice lifted paid_social conversion from 2.49% to 6.27%, other channels
+  flat at about 2.5%.
+- `exercises/2b-guide/GUIDE.md` holds definitions only. Checked 2026-11-03 on the S tier
+  Parquet: SQL written with its rules returns `retention_shift`, `starter_conversion` and
+  `arpdau_monthly` exactly. The traps it fixes: unmatured day-7 cohorts carry `d7_retained = 0`
+  (Android after the boss reads 10.45% instead of 10.89% if left in), ad revenue is in millicents,
+  averaging `d7_retention_pct` across rows, starter pack cohorts need 7 full days, open-ended events
+  end on 9999-12-31.
+
+Rule: the agent never sees the answer key URL, duckgen's `guide.md` or the expected answers. Keep
+them out of `exercises/`, where agents run.
+
+### Workshop keys: the minter
+
+<https://motherduck.com/minter/w/next-data-stack-has-no-ui/> gives each participant an OpenRouter
+key with $5 of credit, valid Nov 3 to Nov 30 2026, for three models: `anthropic/claude-sonnet-5.5`
+($2 / $10 per Mtok, Claude Code's main model), `anthropic/claude-haiku-5.5` and `openai/gpt-6-luna`
+($0.10 / $0.50, the level 4 default). Other models return 403, so `agent.py` now defaults to
+`openai/gpt-6-luna` instead of the tested Gemini 3.8 Flash.
 
 ### Where things live
 
@@ -120,6 +151,63 @@ plan, the exercises and the slides. The mehdio-website deck (`src/talks/no-ui-da
 at `/talks/next-data-stack-has-no-ui`, PR #38 for previews) is a copy for hosting: edit
 `slides/` here, then copy it over. Last synced 2026-11-03. `dive-deck/` holds the deck rebuilt
 as a MotherDuck Dive on live Gloamwick data.
+
+## Exercise runs
+
+### Measured on 2026-11-02
+
+All four levels were run end to end on Gloamwick with the workshop question, before the prompts
+were rewritten for the slides.
+
+| Level | Run | Measured |
+|---|---|---|
+| 1 Local | `claude` in `1-local/`, with the skill. DuckDB 1.4 CLI. | 16 turns, 3.4 min, $0.38 |
+| 2 MotherDuck | Claude Code on the remote MCP with a token header (`mcp.json`, since removed) and a skill | 18 turns, 67 s, $0.22 |
+| 3 Custom MCP | `uv run server.py` as a stdio MCP server | 5 turns, 28 s, $0.07 |
+| 4 Custom agent | `uv run agent.py "..."` on Gemini 3.8 Flash | 5 steps, 62 s |
+
+#### Findings
+
+- All four levels found the same two changes: the level 12 boss rework cut Android D7 retention
+  (about 14.5% to 10.7%, iOS flat), and the rewarded chest video raised ARPDAU (about +2 cents).
+  The answer key `retention_shift` agrees on the boss rework.
+- The domain tool at level 3 cut turns from 16 to 18 down to 5, and cost by 3 to 5 times.
+- The level 4 run read the guide written by the level 2 run and returned the same numbers.
+- Without the MotherDuck token, the level 4 model invented table names instead of stopping.
+- DuckDB in the Claude Code sandbox cannot parse the sandbox proxy URL. Run these outside it.
+
+### Level 2 prompt, without and with the guide (2026-11-03)
+
+Same prompt (the 2A prompt, share in the prompt), a Sonnet agent on the MotherDuck MCP tools each
+time, in the MotherDuck production East org.
+
+| Run | Payer conversion meant | paid_social before to after | Other channels |
+|---|---|---|---|
+| No guide (guide tools off, to simulate a fresh account) | any purchase within 7 days of install | 3.90% to 7.59% | flat, about 3.9% |
+| With "Gloamwick: how we count" (private, deleted after the run) | starter pack buyers / installs, by install cohort, 7 full days | 2.49% to 6.27% | flat, about 2.5% |
+
+The answer key `starter_conversion` says 2.49% to 6.27%. Both runs found the price cut in
+`live_ops_events` and that only paid_social moved. Without the guide the headline number uses
+another definition. With it, the agent called `get_query_guide` first and matched the key exactly.
+That org also holds a private "workshop-test gloamwick metrics" guide from the 2026-11-02 run; the
+guided run read it too but did not use it for conversion.
+
+### Not tested yet
+
+- The rewritten prompts (2026-11-03) at every level.
+- Level 1 on the DuckDB 1.5.6 CLI. The tested run used the 1.4 CLI.
+- The setup from a clean machine: uv script, MotherDuck installer (token prompt, PATH line in the
+  profile), an agent installer, the init prompt.
+- Codex anywhere: skills in `.agents/skills` and `codex mcp add` come from the Codex docs.
+- Level 3 started from `mcp.json` with `--strict-mcp-config`.
+- The tracing bonus against MotherDuck and on a real model run. Tested 2026-11-03 with a local
+  DuckDB file: a simulated level 4 run (agent, chat with usage, two tool calls, one failing) and the
+  level 3 server in-process (tools still list, a failing call is recorded as an ERROR span).
+- Hands-on 2C (Dive and theme), and whether `${TRACE_TO_MOTHERDUCK:-0}` expands in Claude Code's
+  `--mcp-config` file.
+- Level 4 on `openai/gpt-6-luna`, the workshop key's default. The tested run used Gemini 3.8 Flash,
+  which the workshop key does not allow.
+- The Flight stretch in level 2.
 
 ## Chapter 1 in detail: what an agent is
 
@@ -218,7 +306,10 @@ viewer (`view_flight_run`, opened from `run_flight`, enabled for everyone in pro
 history). Agent traces have no dedicated app: we store them in MotherDuck and read them with a Dive
 (chapter 6). Demo idea: run a Flight from chat, watch it in the Flight Explainer, then open a Dive.
 
-## The dataset: duckgen café
+## Earlier demo dataset: duckgen café
+
+Not used in the exercises since 2026-11-03 (see Gloamwick above). Kept for reference.
+
 
 - Release `cafe-juniper-decisions`, S tier (about 100 MB):
   `s3://us-prd-motherduck-open-datasets/duckgen/cafe-juniper-decisions/20261025-a5155411-s-r1/`.
@@ -274,13 +365,22 @@ Source: [Agent Mode in the DuckDB CLI](https://duckdb.org/2026/10/09/agent-mode)
   estimate before long queries. `-agent` and `-no-agent` force it, `DUCKDB_AGENT_MODE` also works.
 - DuckDB's TPC-H test: 123.6k to 50.8k tokens of DuckDB output read by the agent (59% less), all 132
   runs correct, slightly more turns.
-- Needs a 2.0 binary. The repo pins DuckDB 1.5.x in `pyproject.toml` until MotherDuck supports 2.0
-  clients (open question).
+- Needs a 2.0 binary. Checked 2026-11-03: MotherDuck rejects 2.0 clients ("not yet supported by
+  MotherDuck. The latest supported version is v1.5.6"). So every hands-on uses the 1.5.6 CLI, and
+  agent mode is a talk slide only. The repo pins DuckDB 1.5.x in `pyproject.toml`.
+- Setup installs 1.5.6 with `curl -s https://install.motherduck.com | sh`. That script reads
+  `api.motherduck.com/latest_supported_duckdb_version.txt` (1.5.6 on 2026-11-03), installs that
+  DuckDB CLI, the MotherDuck extension and the `motherduck` CLI, and checks the connection when a
+  token is set. Because 1.5.6 is not DuckDB's latest stable (2.0.0), the DuckDB installer leaves it
+  in `~/.duckdb/cli/1.5.6` without touching PATH, so setup adds an `export PATH` line.
+- The guide and Dive SQL functions (`MD_LIST_GUIDES`, `MD_CREATE_GUIDE`, `MD_GET_GUIDE`,
+  `MD_CREATE_DIVE` and friends) exist on the 1.5.6 CLI. The 1.5.2 CLI has no guide functions.
 
 ## The generator
 
 One hosted app where each participant builds an analytics agent and gets a unique link. Nobody
-deploys anything.
+deploys anything. Since 2026-11-03 it is a presenter demo, not a hands-on step: hands-on 4 runs
+`exercises/4-custom-agent/agent.py` on the workshop key, which exists and is tested.
 
 - **Built from /try patterns** (`packages/try-motherduck` in the website repo): server-side loop
   with a per-session MotherDuck MCP client authed by a bearer token, secrets in an encrypted cookie
@@ -335,22 +435,23 @@ Secure view facts (from the docs page, Oct 27 branch):
 - Service accounts have no email, so agent filters use `current_user`. Usernames are unique only
   within an org, so agent service accounts live in the devrel org.
 
-Draft share (not run yet):
+Draft share on Gloamwick (not run yet). Column names are from the `purchases` table;
+`channel_access` is a table we would add:
 
 ```sql
-CREATE SHARE cafe_shop_managers FROM cafe (ACCESS RESTRICTED)
-WITH SECURE VIEW REPLACES item_daily AS (
-    SELECT shop_id, business_date, item_id,
-           sold_units, revenue_cents      -- no cost or margin columns
-    FROM item_daily
-    WHERE shop_id IN (
-        SELECT shop_id FROM shop_access WHERE member = current_user
+CREATE SHARE gloamwick_channel_leads FROM gloamwick (ACCESS RESTRICTED)
+WITH SECURE VIEW REPLACES purchases AS (
+    SELECT purchase_id, player_id, platform, acquisition_channel,
+           sku, purchase_date, price_cents   -- no store fees, no net revenue
+    FROM purchases
+    WHERE acquisition_channel IN (
+        SELECT acquisition_channel FROM channel_access WHERE member = current_user
     )
 );
 ```
 
-Red team: agent A has "never show other shops or costs" in its system prompt, agent B runs through
-the secure view. Participants attack both.
+Red team (presenter demo): agent A has "never show other channels or store fees" in its system
+prompt, agent B runs as a channel lead through the secure view. The room shouts attacks at both.
 
 ## Decisions taken
 
@@ -361,19 +462,38 @@ the secure view. Participants attack both.
 - The café dataset stays as duckgen ships it. No extra personal data table.
 - Duckoffee is parked.
 - The abstract can change.
+- One dataset for every exercise: Gloamwick Studios. No draw (2026-11-03).
+- Workshop keys come from the minter (OpenRouter, three models, $5 each).
+- Level 2 is two short hands-on on the remote MCP server: 2A without a guide, 2B with one. No skill file at level 2: the server's tools and instructions are enough, and it works in claude.ai and ChatGPT too.
+- Bonus after level 3 and in level 4: `exercises/3-custom-mcp/traces.py` writes OpenTelemetry
+  GenAI spans (invoke_agent, chat, execute_tool) to `workshop_traces.spans` in the participant's
+  MotherDuck account, with the columns of the duckgen `insurance_brightholm_agent_ops` spans table
+  behind the gallery's Agent observability Dive, plus question and sql, and an `agent_traces` view.
+  Off unless `TRACE_TO_MOTHERDUCK=1`. Same pattern as /try and duckgen writing to `llm_obs`.
+- Secure views close level 2 as a talk outro ("Can we manage permissions?"). Level 3 then shows the custom MCP server: a tool only it has (`live_ops_impact`), a local stdio server (Claude Code, Codex, Cursor; claude.ai and ChatGPT need a remote one), and the token it runs with, which can be a service account carrying those rules.
+- Agent-neutral exercises: people bring the agent they use. Skills ship in `skills/` and are
+  copied into the agent's folder (`.claude/skills`, `.agents/skills`) as the first step.
+- DuckDB 1.5.6 everywhere in the hands-on. Agent mode (2.0) is no longer a slide.
+- Hands-on 4 is `agent.py`. The generator and the red team are presenter demos.
+- Each hands-on slide mirrors its exercise README, checked by the slide build.
 
 ## Open questions
 
 1. Generator inside /try or as a separate package that reuses its patterns? Check with the /try owner.
-2. Model provider for the generator: Anthropic keys directly, or OpenRouter like /try?
+2. Model provider: answered, OpenRouter keys from the minter.
 3. Can the Admin API create one service account per participant agent, and how many people do we
    expect?
-4. Do MotherDuck clients support DuckDB 2.0 by the workshop date? Agent mode needs 2.0.
+4. Do MotherDuck clients support DuckDB 2.0 by the workshop date? Not on 2026-11-03 (latest
+   supported 1.5.6). Recheck the week before. The MotherDuck installer follows the supported
+   version by itself, but the `export PATH` line in setup names 1.5.6.
 5. Is the guides flag on for the devrel org and participant accounts?
 6. Workshop date, venue, headcount and wifi.
 7. Role split between Mehdi and Jacob.
 8. Fonts: `slides/assets/mono.woff2` is AeonikMono, copied from the mehdio.com talk assets. Check
    the license before this repo goes public.
+9. Screenshots of the MCP apps for the "Chat to build. MCP apps to watch." slide: the Dive viewer and
+   the Flight Explainer inside Claude, and a traces Dive. Slots wait in `slides/assets/`
+   (`mcp-app-dive.png`, `mcp-app-flight.png`, `mcp-app-traces.png`).
 
 ## Next steps
 
@@ -387,6 +507,10 @@ the secure view. Participants attack both.
 - [ ] Replace the pseudo code on slide 6 with the real loop once the generator code exists.
 - [ ] Exercise notes per chapter.
 - [ ] Demo for chapter 2: a small café ingestion Flight run from chat, shown in the Flight Explainer.
+- [ ] Rerun every hands-on with the 2026-11-03 prompts on a workshop key, including `agent.py` on
+      GPT-6 Luna, and 2A/2B in claude.ai and in Claude Code on the workshop key.
+- [ ] Capture the traces screenshot for the MCP apps slide (the Dive and Flight ones are in).
+- [ ] Sync `dive-deck/` and the mehdio.com copy with the new slides.
 - [ ] Full dry run with timings.
 - [ ] Update the abstract.
 

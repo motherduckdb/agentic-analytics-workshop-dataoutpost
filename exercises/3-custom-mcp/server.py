@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["fastmcp==4.0.3"]
+# dependencies = ["fastmcp==4.0.3", "opentelemetry-sdk==1.45.2", "duckdb==1.5.6"]
 # ///
 """Level 3 starter: your own MCP server in front of MotherDuck's.
 
@@ -9,6 +9,7 @@ rewrite their descriptions, add your own tool, and log every question.
 
 Run it as a stdio MCP server:   uv run server.py
 The MotherDuck token comes from MOTHERDUCK_TOKEN and never reaches the agent.
+Bonus: TRACE_TO_MOTHERDUCK=1 writes one OpenTelemetry span per tool call to MotherDuck (traces.py).
 """
 
 import json
@@ -20,9 +21,12 @@ from typing import Any
 from fastmcp import Client, FastMCP
 from fastmcp.client.transports import StreamableHttpTransport
 
+import traces
+
 UPSTREAM = "https://api.motherduck.com/mcp"
 DATABASE = os.environ.get("COMPANY_DB", "gaming_gloamwick_liveops")
 LOG = os.environ.get("QUESTION_LOG", "questions.jsonl")
+TRACER = traces.setup("company-data-mcp")
 
 mcp = FastMCP(
     "company-data",
@@ -33,15 +37,23 @@ mcp = FastMCP(
 )
 
 
-async def upstream(tool: str, args: dict[str, Any]) -> Any:
+async def upstream(tool: str, args: dict[str, Any], as_tool: str, question: str | None = None,
+                   sql: str | None = None) -> Any:
     # One session per call, so no client is shared between users.
-    transport = StreamableHttpTransport(
-        url=UPSTREAM,
-        headers={"Authorization": f"Bearer {os.environ['MOTHERDUCK_TOKEN']}"},
-    )
-    async with Client(transport) as client:
-        result = await client.call_tool_mcp(tool, args)
-        return result.model_dump(by_alias=True, exclude_none=True)
+    # One span per call too, named after your tool (bonus, off unless TRACE_TO_MOTHERDUCK=1).
+    with traces.tool_span(TRACER, as_tool, question=question, sql=sql) as span:
+        try:
+            transport = StreamableHttpTransport(
+                url=UPSTREAM,
+                headers={"Authorization": f"Bearer {os.environ['MOTHERDUCK_TOKEN']}"},
+            )
+            async with Client(transport) as client:
+                result = (await client.call_tool_mcp(tool, args)).model_dump(by_alias=True, exclude_none=True)
+        except Exception as error:
+            traces.finish_tool(span, False, type(error).__name__)
+            raise
+        traces.finish_tool(span, not result.get("isError"))
+        return result
 
 
 def log(question: str, sql: str, outcome: str) -> None:
@@ -56,7 +68,7 @@ async def ask_data(question: str, sql: str) -> Any:
     question: the user's question, in their words. It is logged with the SQL.
     sql: DuckDB SQL. Money columns are integer cents.
     """
-    result = await upstream("query", {"database": DATABASE, "sql": sql})
+    result = await upstream("query", {"database": DATABASE, "sql": sql}, "ask_data", question, sql)
     log(question, sql, "error" if result.get("isError") else "ok")
     return result
 
@@ -64,25 +76,25 @@ async def ask_data(question: str, sql: str) -> Any:
 @mcp.tool
 async def list_company_tables() -> Any:
     """List the company's tables and what they hold."""
-    return await upstream("list_tables", {"database": DATABASE})
+    return await upstream("list_tables", {"database": DATABASE}, "list_company_tables")
 
 
 @mcp.tool
 async def describe_table(table: str) -> Any:
     """List the columns of one company table."""
-    return await upstream("list_columns", {"database": DATABASE, "table": table})
+    return await upstream("list_columns", {"database": DATABASE, "table": table}, "describe_table")
 
 
 @mcp.tool
 async def how_we_count() -> Any:
     """Read the company's metric definitions before writing SQL."""
-    return await upstream("get_query_guide", {})
+    return await upstream("get_query_guide", {}, "how_we_count")
 
 
 @mcp.tool
 async def read_definition(guide_uuid: str) -> Any:
     """Read one guide listed by how_we_count, by its UUID."""
-    return await upstream("get_guide", {"uuid": guide_uuid})
+    return await upstream("get_guide", {"uuid": guide_uuid}, "read_definition")
 
 
 # Your own tool: the SQL for a question the business asks every week.
@@ -104,7 +116,7 @@ async def live_ops_impact(question: str, days: int = 14) -> Any:
     GROUP BY ALL
     ORDER BY e.start_date, m.platform, period DESC
     """
-    result = await upstream("query", {"database": DATABASE, "sql": sql})
+    result = await upstream("query", {"database": DATABASE, "sql": sql}, "live_ops_impact", question, sql)
     log(question, sql, "error" if result.get("isError") else "ok")
     return result
 
