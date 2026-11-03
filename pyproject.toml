@@ -1,5 +1,5 @@
 [project]
-name = "no-ui-data-stack-workshop"
+name = "agentic-analytics-workshop-dataoutpost"
 version = "0.1.0"
 description = "The Next Data Stack Has No UI: build an analytics agent end to end with DuckDB and MotherDuck"
 requires-python = ">=3.11"

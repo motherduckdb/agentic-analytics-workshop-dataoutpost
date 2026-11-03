@@ -22,7 +22,7 @@ from fastmcp.client.transports import StdioTransport
 
 MODEL = os.environ.get("MODEL", "google/gemini-3.8-flash")
 MAX_STEPS = int(os.environ.get("MAX_STEPS", "12"))
-SERVER = Path(__file__).parent.parent / "level3" / "server.py"
+SERVER = Path(__file__).parent.parent / "3-custom-mcp" / "server.py"
 SYSTEM = "You answer business questions with the tools you have. Show the numbers and the SQL you relied on."
 
 

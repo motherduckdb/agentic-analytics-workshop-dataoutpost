@@ -10,7 +10,8 @@ import './deck.css'
 import './workshop.css'
 
 const slides = rawSlides as Slide[]
-const clamp = (n: number) => Math.min(slides.length - 1, Math.max(0, Number.isFinite(n) ? n : 0))
+const clamp = (n: number) =>
+  Math.min(slides.length - 1, Math.max(0, Number.isFinite(n) ? n : 0))
 const DEFAULT_SECTION = 'THE NEXT DATA STACK HAS NO UI'
 
 function Code({ slide, focus }: { slide: Slide; focus: number }) {
@@ -39,7 +40,12 @@ function Code({ slide, focus }: { slide: Slide; focus: number }) {
         <code>
           {code.split('\n').map((line, i) => (
             <React.Fragment key={i}>
-              <span className={'code-line ' + (focus < 0 ? '' : focus === i ? 'focus' : 'dim')}>
+              <span
+                className={
+                  'code-line ' +
+                  (focus < 0 ? '' : focus === i ? 'focus' : 'dim')
+                }
+              >
                 <Syntax line={line} lang={slide.language} />
               </span>
               {'\n'}
@@ -52,7 +58,9 @@ function Code({ slide, focus }: { slide: Slide; focus: number }) {
 }
 
 export default function Deck() {
-  const [current, setCurrent] = useState(() => clamp(Number(location.hash.slice(1) || 1) - 1))
+  const [current, setCurrent] = useState(() =>
+    clamp(Number(location.hash.slice(1) || 1) - 1)
+  )
   const [scale, setScale] = useState(1)
   const [focus, setFocus] = useState(-1)
   const [notes, setNotes] = useState(false)
@@ -76,7 +84,8 @@ export default function Deck() {
   )
 
   useEffect(() => {
-    const resize = () => setScale(Math.min(innerWidth / 1600, innerHeight / 900))
+    const resize = () =>
+      setScale(Math.min(innerWidth / 1600, innerHeight / 900))
     const hash = () => navigate(Number(location.hash.slice(1) || 1) - 1)
     resize()
     window.addEventListener('resize', resize)
@@ -88,13 +97,20 @@ export default function Deck() {
   }, [navigate])
 
   const fullscreen = () =>
-    document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()
+    document.fullscreenElement
+      ? document.exitFullscreen()
+      : document.documentElement.requestFullscreen()
 
   useEffect(() => {
     const keyboard = (e: KeyboardEvent) => {
       const target = e.target instanceof Element ? e.target : null
-      if (target?.closest('input,textarea,select,[contenteditable="true"]')) return
-      if ([' ', 'Enter'].includes(e.key) && target?.closest('button,a,[role="button"]')) return
+      if (target?.closest('input,textarea,select,[contenteditable="true"]'))
+        return
+      if (
+        [' ', 'Enter'].includes(e.key) &&
+        target?.closest('button,a,[role="button"]')
+      )
+        return
       if (['ArrowRight', 'PageDown', ' '].includes(e.key)) {
         e.preventDefault()
         navigate(current + 1)
@@ -137,7 +153,8 @@ export default function Deck() {
           if (!touch.current) return
           const dx = e.changedTouches[0].clientX - touch.current.x
           const dy = e.changedTouches[0].clientY - touch.current.y
-          if (Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 2) navigate(current + (dx < 0 ? 1 : -1))
+          if (Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 2)
+            navigate(current + (dx < 0 ? 1 : -1))
           touch.current = undefined
         }}
       >
@@ -151,11 +168,15 @@ export default function Deck() {
             (slide.kind === 'custom' ? ' ws-slide' : '') +
             (slide.id === 'hero' ? ' hero-slide' : '')
           }
-          aria-label={'Slide ' + (current + 1) + ': ' + slide.title.replaceAll('\n', ' ')}
+          aria-label={
+            'Slide ' + (current + 1) + ': ' + slide.title.replaceAll('\n', ' ')
+          }
         >
           <div className="eyebrow">{slide.section ?? DEFAULT_SECTION}</div>
           <h1>{slide.title}</h1>
-          {slide.kind === 'custom' && slide.id && <Visual id={slide.id} onJump={jump} />}
+          {slide.kind === 'custom' && slide.id && (
+            <Visual id={slide.id} slide={slide} onJump={jump} />
+          )}
           {slide.kind === 'code' && <Code slide={slide} focus={focus} />}
           {slide.body && <p className="body">{slide.body}</p>}
           <footer>
@@ -173,7 +194,11 @@ export default function Deck() {
         </section>
       </main>
       <nav className="controls" aria-label="Presentation controls">
-        <button aria-label="Previous slide" disabled={current === 0} onClick={() => navigate(current - 1)}>
+        <button
+          aria-label="Previous slide"
+          disabled={current === 0}
+          onClick={() => navigate(current - 1)}
+        >
           ←
         </button>
         <button
@@ -185,7 +210,9 @@ export default function Deck() {
         </button>
         <button onClick={() => setOverview(v => !v)}>G · slides</button>
         <button onClick={() => setNotes(v => !v)}>N · notes</button>
-        <button onClick={() => fullscreen().catch(() => {})}>F · full screen</button>
+        <button onClick={() => fullscreen().catch(() => {})}>
+          F · full screen
+        </button>
       </nav>
       {notes && (
         <aside className="notes" aria-label="Speaker notes">
@@ -205,7 +232,11 @@ export default function Deck() {
           </button>
           <div className="overview">
             {slides.map((s, i) => (
-              <button key={i} aria-current={current === i ? 'step' : undefined} onClick={() => navigate(i)}>
+              <button
+                key={i}
+                aria-current={current === i ? 'step' : undefined}
+                onClick={() => navigate(i)}
+              >
                 <span>{String(i + 1).padStart(2, '0')}</span>
                 {s.title.replaceAll('\n', ' ')}
               </button>
@@ -213,7 +244,10 @@ export default function Deck() {
           </div>
         </div>
       )}
-      <div className="progress" style={{ width: ((current + 1) / slides.length) * 100 + '%' }} />
+      <div
+        className="progress"
+        style={{ width: ((current + 1) / slides.length) * 100 + '%' }}
+      />
     </div>
   )
 }

@@ -14,6 +14,9 @@ This repo prepares a workshop. It is not the participant repo yet. Read [PLAN.md
 - `slides/src/deck.css` is copied unchanged from the Jev for analytics deck on mehdio.com. Do not
   edit it. Put workshop styles in `slides/src/workshop.css`.
 - Build with `npm run build` in `slides/`, then open `slides/dist/index.html`.
+- `slides/` is the source of truth. The mehdio.com copy (`src/talks/no-ui-data-stack/` in
+  mehdio-website) hosts it: after edits, copy `slides/src/` and `slides/assets/` there. Its
+  `Deck.tsx` imports `../jev-analytics/deck.css` instead of `./deck.css`.
 
 ## Facts
 

@@ -39,7 +39,7 @@ wheels = [
 ]
 
 [[package]]
-name = "no-ui-data-stack-workshop"
+name = "agentic-analytics-workshop-dataoutpost"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

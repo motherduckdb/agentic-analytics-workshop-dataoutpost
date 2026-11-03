@@ -23,10 +23,10 @@ export ANTHROPIC_SMALL_FAST_MODEL=anthropic/claude-haiku-5.5
 
 | Level | Folder | Run | Measured |
 |---|---|---|---|
-| 1 Local | `level1/` | `claude` in the folder, with the skill. Needs the DuckDB CLI. | 16 turns, 3.4 min, $0.38 |
-| 2 MotherDuck | `level2/` | `claude --mcp-config mcp.json` in the folder | 18 turns, 67 s, $0.22 |
-| 3 Your tools | `level3/` | `uv run server.py` as a stdio MCP server, then point the agent at it | 5 turns, 28 s, $0.07 |
-| 4 Your agent | `level4/` | `uv run agent.py "your question"`. `MODEL` picks any OpenRouter model. | 5 steps, 62 s |
+| 1 Local | [`1-local/`](1-local/) | `claude` in the folder, with the skill. Needs the DuckDB CLI. | 16 turns, 3.4 min, $0.38 |
+| 2 Remote MCP | [`2-remote-mcp/`](2-remote-mcp/) | `claude --mcp-config mcp.json` in the folder | 18 turns, 67 s, $0.22 |
+| 3 Custom MCP | [`3-custom-mcp/`](3-custom-mcp/) | `uv run server.py` as a stdio MCP server, then point the agent at it | 5 turns, 28 s, $0.07 |
+| 4 Custom agent | [`4-custom-agent/`](4-custom-agent/) | `uv run agent.py "your question"`. `MODEL` picks any OpenRouter model. | 5 steps, 62 s |
 
 Level 3 needs the share attached once in the MotherDuck account (level 2 does it). `COMPANY_DB`
 sets the database name, `QUESTION_LOG` the log file.

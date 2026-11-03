@@ -115,9 +115,11 @@ answers. The grader fetches the key on its side.
 
 ### Where things live
 
-The deck source moved to the mehdio-website repo (`src/talks/no-ui-data-stack/`, output at
-`/talks/next-data-stack-has-no-ui`, PR #38 for previews). `slides/` in this repo is the older copy
-and is no longer edited.
+This repo (`motherduckdb/agentic-analytics-workshop-dataoutpost`) is the source of truth for the
+plan, the exercises and the slides. The mehdio-website deck (`src/talks/no-ui-data-stack/`, output
+at `/talks/next-data-stack-has-no-ui`, PR #38 for previews) is a copy for hosting: edit
+`slides/` here, then copy it over. Last synced 2026-11-03. `dive-deck/` holds the deck rebuilt
+as a MotherDuck Dive on live Gloamwick data.
 
 ## Chapter 1 in detail: what an agent is
 

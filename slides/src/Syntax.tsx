@@ -10,9 +10,17 @@ const loopTokens = /(#[^\n]*|\b(?:loop|if|else|return)\b|\b(?:model|run)\b)/g
 const loopKeywords = /^(loop|if|else|return)$/
 const loopFunctions = /^(model|run)$/
 
-export function Syntax({ line, lang }: { line: string; lang?: 'sql' | 'loop' | 'md' }) {
+export function Syntax({
+  line,
+  lang
+}: {
+  line: string
+  lang?: 'sql' | 'loop' | 'md'
+}) {
   if (lang === 'md')
-    return <span className={line.startsWith('#') ? 'kw' : undefined}>{line}</span>
+    return (
+      <span className={line.startsWith('#') ? 'kw' : undefined}>{line}</span>
+    )
   if (lang === 'loop')
     return (
       <>
