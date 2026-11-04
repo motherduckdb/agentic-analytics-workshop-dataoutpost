@@ -84,7 +84,7 @@ level one more part of the agent becomes the participant's own. Every level ends
 | 0:26 | Level 1 · Local | a skill file, data on your laptop | DuckDB CLI (agent mode in 2.0, shown) | 1. Load Gloamwick from S3 into local DuckDB, answer the workshop question, local HTML dashboard |
 | 0:40 | Level 2 · MotherDuck | data and compute in MotherDuck, anyone can query | remote MCP, Guides, Dives, Flights, Ducklings, shares, secure views | 2A. Connect your agent to the MotherDuck MCP, ask with the share in the prompt. 2B. Add a guide, ask again. 2C. A Dive, restyled from the theme gallery. Outro: can we manage permissions? (secure views) |
 | 1:00 | Level 3 · Your tools | the tool surface | white-label MCP pattern | 3. FastMCP proxy: forwarded tools, a domain tool, a question log, add your own tool |
-| 1:12 | Level 4 · Your agent | the loop and the model | traces in MotherDuck | 4. `agent.py` on the workshop key: run, read the steps, swap the model, change the harness. Generator and red team are presenter demos |
+| 1:12 | Level 4 · Your agent | the loop and the model | traces in MotherDuck | 4. `agent.py` on the workshop key: run, read the steps, swap the model, change the harness. Or Agent Builder in the browser (Dive Keeper). Red team is a presenter demo |
 | 1:24 | Wrap | | | Recap, discussion, references |
 
 Every hands-on slide mirrors the README of its `exercises/` folder: same numbered steps, same
@@ -203,14 +203,31 @@ guided run read it too but did not use it for conversion.
   $0.0028. Fix found on the way: spans are flushed every second, since a server stopped with
   SIGTERM skips atexit.
 
+- `.env` at the repo root (2026-11-03): with no key in the environment, `server.py` read the
+  MotherDuck token from `.env` (over HTTP on another port, `live_ops_impact` returned rows), kept
+  the OpenRouter key out of its environment, and `agent.py` ran end to end from `.env` (52 s, 7 tool
+  calls, right answer).
+
+- Full flow in herdr (2026-11-03), Claude Code (Opus) in a fresh `~/gloamwick` clone, with only a
+  lowercase `motherduck_token` in the environment and an empty `.env`. The server read the
+  lowercase token. Level 3 steps 1, 4 and 5 worked, with the server added by
+  `claude mcp add --transport http` (local scope). Step 4 first ignored `live_ops_impact` (9
+  `ask_data` calls); after the server instructions and the tool description said to call it first
+  for live-ops questions, it did, and gave the right answer. 2C built the Dive and restyled it in
+  FT Salmon. Level 4 on Luna: right answer, `live_ops_impact` first. With
+  `TRACE_TO_MOTHERDUCK=1`, spans landed in `md:workshop_traces`, and the bonus prompt built a
+  traces Dive (not yet checked in the browser, and not yet on a traced level 4 run).
+
 ### Not tested yet
 
-- The rewritten prompts at levels 1 and 2C, and the setup prompt run by an agent on a clean machine
+- The rewritten prompt at level 1, and the setup prompt run by an agent on a clean machine
   (uv script, MotherDuck installer without its token prompt, PATH line in the profile).
 - Level 1 on the DuckDB 1.5.6 CLI. The tested run used the 1.4 CLI.
-- Adding the level 3 server with `claude mcp add --transport http` and `codex mcp add --url`.
+- `claude mcp add --scope user` and `codex mcp add --url`. Only local scope was run.
 - Codex anywhere: skills in `.agents/skills` and `codex mcp add` come from the Codex docs.
-- Tracing written to MotherDuck itself (tested against a local DuckDB file), and the Dive prompt.
+- The traces Dive on a traced level 4 run (nested agent, chat and tool spans).
+- The Agent Builder path of hands-on 4. Not deployed yet, and not run from this repo: its steps
+  come from the session that built it.
 - The Flight stretch in level 2.
 
 ## Chapter 1 in detail: what an agent is
@@ -357,8 +374,54 @@ Source: [Agent Mode in the DuckDB CLI](https://duckdb.org/2026/10/09/agent-mode)
 ## The generator
 
 One hosted app where each participant builds an analytics agent and gets a unique link. Nobody
-deploys anything. Since 2026-11-03 it is a presenter demo, not a hands-on step: hands-on 4 runs
-`exercises/4-custom-agent/agent.py` on the workshop key, which exists and is tested.
+deploys anything. Hands-on 4 runs `exercises/4-custom-agent/agent.py` on the workshop key, which
+exists and is tested. Since 2026-11-03 the generator exists as Agent Builder, the second path of
+hands-on 4.
+
+### Agent Builder
+
+A web app in the website repo (`packages/agent-builder`, branch `feat/agent-builder`, PR #3448,
+not merged). Once deployed: `https://motherduck.com/labs/agent-builder`, proxied by the marketing
+site. For learning, not for production. The facts below come from the session that built it.
+
+- You pick the model, prompt, tools, checks, limits and schedule. One template: Dive Keeper, an
+  agent that looks after one Dive.
+- Same loop as `agent.py`, with a harness: it pre-checks every query of the Dive, keeps edits in a
+  draft, blocks writes to any other Dive, enforces step, token, cost and time limits, verifies the
+  draft and asks a human to approve. Every run is a MotherDuck Flight in the participant's account
+  (a Python port of the harness), so the traces and the run view live there.
+- Sign in with MotherDuck (OAuth, no token to paste). The OpenRouter key (the workshop key works)
+  is stored as a MotherDuck secret for the agent's Flight.
+- "Prepare the simulation" copies Gloamwick into `agent_builder_sim_<id>` with data through
+  2025-03-30, shares it, and saves the Dive "Dive Keeper simulation <id>": 4 KPIs, 3 charts
+  (weekly D7 retention by platform, weekly installs by platform, daily revenue) and a "Flagged by
+  Dive Keeper" panel. The first healthy run is the baseline and publishes up to 3 insights.
+- "Move the data forward" adds a week. What the agent should do, for the presenters (the
+  participant README does not list it):
+
+  | Date | What changes | What the agent should do |
+  |---|---|---|
+  | 2025-04-10 | Harder level 12 boss: Android D7 drops about 2.4 points (in the data) | Healthy run with a flag on the drop (under the 25% key-number threshold). Some models report it |
+  | 2025-05-01 | Starter-pack price drop | |
+  | 2025-05-12 | Web version launches (scripted) | The retention chart only lists Android and iOS: propose adding web |
+  | 2025-06-23 | `d7_retained` renamed to `d7_retained_players` (scripted) | Queries break: propose a fixed draft |
+  | 2025-07-01 | Summer event | |
+  | 2025-08-04 | A reload drops the last three weeks | Report that the latest date went back, no edit |
+  | 2025-09-01 | A week is loaded twice | Report +100% installs, no edit |
+
+- The first change to review is expected at the web launch (2025-05-12): nothing is scripted
+  before it, and in the Agent Builder session's end-to-end tests no change came earlier. A model
+  could still propose one sooner; the harness verifies it like any other.
+- A proposed change waits on the History tab ("Review the change", then approve); approving
+  re-runs every query before publishing.
+  "Start agent" runs every 5 minutes and stops after 2 hours. "Start over" makes a fresh
+  simulation and deletes the previous one.
+- About $0.002 to $0.005 per run on `openai/gpt-6-luna`.
+- It creates in the participant's account: databases `agent_builder` (traces, insights, flight
+  steps) and `agent_builder_sim_<id>`, a share, a Dive, a Flight `agent-builder-<agent>-<id>` and
+  a secret `agent_builder_openrouter_<id>`. Deleting the agent removes its Flight and secret.
+
+### The original spec
 
 - **Built from /try patterns** (`packages/try-motherduck` in the website repo): server-side loop
   with a per-session MotherDuck MCP client authed by a bearer token, secrets in an encrypted cookie
@@ -452,12 +515,14 @@ prompt, agent B runs as a channel lead through the secure view. The room shouts 
 - Agent-neutral exercises: people bring the agent they use. Skills ship in `skills/` and are
   copied into the agent's folder (`.claude/skills`, `.agents/skills`) as the first step.
 - DuckDB 1.5.6 everywhere in the hands-on. Agent mode (2.0) is no longer a slide.
-- Hands-on 4 is `agent.py`. The generator and the red team are presenter demos.
+- Hands-on 4 is `agent.py`, with Agent Builder in the browser as a second path (2026-11-03). The
+  red team is a presenter demo.
 - Each hands-on slide mirrors its exercise README, checked by the slide build.
 
 ## Open questions
 
-1. Generator inside /try or as a separate package that reuses its patterns? Check with the /try owner.
+1. Generator inside /try or as a separate package that reuses its patterns? Answered: Agent
+   Builder, a separate package (`packages/agent-builder`) in the website repo.
 2. Model provider: answered, OpenRouter keys from the minter.
 3. Can the Admin API create one service account per participant agent, and how many people do we
    expect?
@@ -472,6 +537,8 @@ prompt, agent B runs as a channel lead through the secure view. The room shouts 
 9. Screenshots of the MCP apps for the "Chat to build. MCP apps to watch." slide: the Dive viewer and
    the Flight Explainer inside Claude, and a traces Dive. Slots wait in `slides/assets/`
    (`mcp-app-dive.png`, `mcp-app-flight.png`, `mcp-app-traces.png`).
+10. Is Agent Builder live at `motherduck.com/labs/agent-builder` by the workshop date? PR #3448 is
+    not merged yet.
 
 ## Next steps
 
@@ -487,6 +554,8 @@ prompt, agent B runs as a channel lead through the secure view. The room shouts 
 - [ ] Demo for chapter 2: a small café ingestion Flight run from chat, shown in the Flight Explainer.
 - [ ] Rerun every hands-on with the 2026-11-03 prompts on a workshop key, including `agent.py` on
       GPT-6 Luna, and 2A/2B in claude.ai and in Claude Code on the workshop key.
+- [ ] Run the Agent Builder path of hands-on 4 on a fresh account with a workshop key once it is
+      deployed, and time it against the 10 minutes.
 - [ ] Capture the traces screenshot for the MCP apps slide (the Dive and Flight ones are in).
 - [ ] Sync the mehdio.com copy with the new slides.
 - [ ] Full dry run with timings.

@@ -1948,3 +1948,6 @@
 .ws-slide:has(.ws-thanks) > h1 {
   display: none;
 }
+.ws-visual.ws-ho-dense .ws-ho-cmd {
+  font-size: 13px;
+}

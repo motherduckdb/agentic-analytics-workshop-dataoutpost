@@ -8,13 +8,13 @@ You do not need to clone this repo before level 3. Levels 1 and 2 link to the tw
 
 | Hands-on | Folder | Time | You build |
 |---|---|---|---|
-| 0 Setup | [`0-setup/`](0-setup/README.md) | 5 min | a coding agent and a MotherDuck token; one prompt installs uv, DuckDB 1.5.6 and the MotherDuck CLI |
+| 0 Setup | [`0-setup/`](0-setup/README.md) | 5 min | a coding agent and a MotherDuck account; one prompt installs uv, DuckDB 1.5.6 and the MotherDuck CLI |
 | 1 Local | [`1-local/`](1-local/README.md) | 10 min | a local agent: your coding agent adds a skill, loads Parquet with the DuckDB CLI, builds a dashboard |
 | 2A MotherDuck | [`2a-mcp/`](2a-mcp/README.md) | 5 min | your agent on the MotherDuck MCP server, one question with the share in the prompt |
 | 2B Guide | [`2b-guide/`](2b-guide/README.md) | 5 min | a MotherDuck guide, the same question again |
 | 2C Dive | [`2c-dive/`](2c-dive/README.md) | 5 min | a Dive over the answer, restyled from the theme gallery |
 | 3 Custom MCP | [`3-custom-mcp/`](3-custom-mcp/README.md) | 10 min | your own MCP server in front of MotherDuck's, a tool only it has; bonus: traces in MotherDuck |
-| 4 Custom agent | [`4-custom-agent/`](4-custom-agent/README.md) | 10 min | your own loop, on the model you pick |
+| 4 Custom agent | [`4-custom-agent/`](4-custom-agent/README.md) | 10 min | two paths: your own loop on the model you pick, or Agent Builder in the browser on a simulated Dive |
 
 ## The data
 
@@ -48,8 +48,9 @@ duckgen's `guide.md` or answer keys: they contain the answers.
 - The workshop key comes from the minter:
   <https://motherduck.com/minter/w/next-data-stack-has-no-ui/>. $5 of credit, three models:
   `anthropic/claude-sonnet-5.5`, `anthropic/claude-haiku-5.5`, `openai/gpt-6-luna`.
-- Keys are read from the environment (`ANTHROPIC_AUTH_TOKEN` or `OPENROUTER_API_KEY`, and
-  `MOTHERDUCK_TOKEN`). None is written to a file, and none reaches the model.
+- Levels 3 and 4 read `MOTHERDUCK_TOKEN` and `OPENROUTER_API_KEY` from a `.env` at the root of the
+  repo: `cp .env.example .env`, then fill it in. Git ignores `.env`. The workshop key exports for
+  Claude Code stay in your terminal. No key ever reaches the model.
 
 ## Status
 

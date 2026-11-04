@@ -13,13 +13,13 @@ you control more of it.
 
 | Hands-on | Folder | Time | What you do |
 |---|---|---|---|
-| 0 Setup | [`exercises/0-setup/`](exercises/0-setup/) | 5 min | Install a coding agent, get a MotherDuck token, one prompt installs the rest |
+| 0 Setup | [`exercises/0-setup/`](exercises/0-setup/) | 5 min | Install a coding agent, create a MotherDuck account, one prompt installs the rest |
 | 1 Local | [`exercises/1-local/`](exercises/1-local/) | 10 min | Your agent adds a skill, loads Parquet from S3 with the DuckDB CLI, answers the question, builds a local HTML dashboard |
 | 2A MotherDuck | [`exercises/2a-mcp/`](exercises/2a-mcp/) | 5 min | Connect your agent to the MotherDuck MCP server, ask with the share in the prompt |
 | 2B Guide | [`exercises/2b-guide/`](exercises/2b-guide/) | 5 min | Add a MotherDuck guide, ask again, compare |
 | 2C Dive | [`exercises/2c-dive/`](exercises/2c-dive/) | 5 min | Build a Dive and restyle it from the theme gallery |
 | 3 Custom MCP | [`exercises/3-custom-mcp/`](exercises/3-custom-mcp/) | 10 min | Your own MCP server in front of MotherDuck's: a tool only it has, a question log, the token it runs with. Bonus: traces in MotherDuck |
-| 4 Custom agent | [`exercises/4-custom-agent/`](exercises/4-custom-agent/) | 10 min | A 60-line agent loop on the model you pick, using your level 3 tools |
+| 4 Custom agent | [`exercises/4-custom-agent/`](exercises/4-custom-agent/) | 10 min | Two paths: a 60-line agent loop on the model you pick, using your level 3 tools, or Agent Builder in the browser on a simulated Dive |
 
 Each folder has a README with the same numbered steps, prompts, commands, time and "done when" as
 its slide. The slide build fails if they disagree. Dataset and questions:
@@ -29,16 +29,16 @@ its slide. The slide build fails if they disagree. Dataset and questions:
 
 - The coding agent of your choice, for example
   [Claude Code](https://code.claude.com/docs/en/setup) or [Codex](https://developers.openai.com/codex/cli).
-- A free [MotherDuck](https://motherduck.com) account and an access token.
+- A free [MotherDuck](https://motherduck.com) account. Levels 3 and 4 also need an access token.
 - No AI subscription? A workshop key from the [minter](https://motherduck.com/minter/w/next-data-stack-has-no-ui/):
   an OpenRouter key with $5 of credit for Claude Sonnet 5.5, Claude Haiku 5.5 and GPT-6 Luna. It
   also runs the level 4 agent.
 
 Your agent installs the rest in hands-on 0: [uv](https://docs.astral.sh/uv/) (it brings Python),
 the [DuckDB CLI](https://duckdb.org/docs/installation/) 1.5.6 and the MotherDuck CLI. MotherDuck does
-not accept DuckDB 2.0 clients yet, so do not use Homebrew's DuckDB. Keys are read from the
-environment (`MOTHERDUCK_TOKEN`, `ANTHROPIC_AUTH_TOKEN`, `OPENROUTER_API_KEY`). Never commit them.
-`.env` files are ignored.
+not accept DuckDB 2.0 clients yet, so do not use Homebrew's DuckDB. Levels 3 and 4 read
+`MOTHERDUCK_TOKEN` and `OPENROUTER_API_KEY` from a `.env` at the repo root (`cp .env.example .env`).
+Git ignores `.env`. Never commit a key.
 
 ## The data
 
@@ -76,5 +76,6 @@ visuals in `slides/src/Visuals.tsx`.
 |---|---|
 | [`exercises/`](exercises/) | One folder per hands-on, with the same steps as its slide |
 | [`slides/`](slides/) | The workshop deck (React + esbuild, 1600 x 900) |
+| [`.env.example`](.env.example) | The keys levels 3 and 4 read: copy it to `.env` and fill it in |
 | [`PLAN.md`](PLAN.md) | Organizers: agenda, checked facts, test runs, decisions, open questions |
 | [`AGENTS.md`](AGENTS.md) | How to work on this repo (people and coding agents) |
