@@ -1147,7 +1147,7 @@
   line-height: 1.55;
 }
 
-/* Hands-on placeholder: time box, steps, exit check */
+/* Hands-on: time box, steps, exit check */
 .ws-ho {
   width: 1430px;
   display: grid;
@@ -1169,17 +1169,6 @@
     64px AeonikMono,
     monospace;
   line-height: 1;
-}
-.ws-ho-stamp {
-  align-self: flex-start;
-  font:
-    18px AeonikMono,
-    monospace;
-  color: #fff;
-  background: var(--coral);
-  padding: 6px 12px;
-  transform: rotate(-3deg);
-  text-transform: uppercase;
 }
 .ws-ho-needs {
   display: flex;
@@ -1237,9 +1226,6 @@
     18px AeonikMono,
     monospace;
   min-width: 210px;
-}
-.ws-ho-stamp.ws-ho-tested {
-  background: var(--garden);
 }
 
 /* Icons on the harness cards, the UI table, the levels table and the DIY boxes */

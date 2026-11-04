@@ -141,11 +141,9 @@ const people: Record<string, { photo: string; alt: string; facts: Fact[] }> = {
     photo: 'assets/jacob.jpg',
     alt: 'Jacob Matson',
     facts: [
-      { head: 'TODO: years in data', sub: 'TODO' },
-      { head: 'TODO: life', sub: 'TODO' },
-      { head: 'TODO: where from', sub: 'TODO' },
-      { head: 'TODO: role at MotherDuck', sub: 'TODO' },
-      { head: 'TODO: content online', sub: 'TODO' }
+      { head: 'Seattle based', sub: 'Washington, United States' },
+      { head: '2+ years at MotherDuck', sub: 'Head of Technical Product Marketing' },
+      { head: 'Loves spreadsheets', sub: 'And ducks' }
     ]
   }
 }
@@ -1752,16 +1750,6 @@ function HandsOn({ slide }: { slide: Slide }) {
       />
       <div className="ws-ho-side">
         <span className="ws-ho-clock">{slide.minutes ?? '?'} MIN</span>
-        {slide.status && (
-          <span
-            className={
-              'ws-ho-stamp' +
-              (slide.status.startsWith('tested') ? ' ws-ho-tested' : '')
-            }
-          >
-            {slide.status}
-          </span>
-        )}
         {slide.exercise && (
           <div className="ws-ho-repo">
             <span className="narrative-kicker">FOLLOW IN THE REPO</span>

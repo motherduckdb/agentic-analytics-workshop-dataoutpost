@@ -31,7 +31,8 @@ This repo prepares a workshop. It is not the participant repo yet. Read [PLAN.md
 ## Facts
 
 - When a slide or PLAN.md states a product fact (tool names, limits, plans, versions), it must come
-  from the code, the docs or a query we ran. Mark anything untested as a draft.
+  from the code, the docs or a query we ran. List anything untested in PLAN.md, under "Not tested
+  yet".
 
 ## Secrets
 

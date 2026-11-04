@@ -57,7 +57,7 @@ The prompts are the same as on the slide. Paste them as they are.
    ```
 
    The first line is for Claude Code (`/mcp` should then show `company-data` connected), the second
-   for Codex (from the Codex docs, not tested). Other agents: add an HTTP MCP server with that URL.
+   for Codex (`codex mcp list` should then show it). Other agents: add an HTTP MCP server with that URL.
 
 4. Ask the workshop question with your tools only. Watch for `live_ops_impact` in the tool calls:
    only your server has it. Paste:
@@ -106,7 +106,7 @@ motherduck query "FROM workshop_traces.spans ORDER BY start_time DESC LIMIT 10"
   level 2, restart the server, and ask the 2B question.
 - Create a [service account](https://motherduck.com/docs/key-tasks/service-accounts-guide/create-and-configure-service-accounts/)
   (the free plan allows two), give it the Gloamwick share, and start your server with its token
-  instead of yours. Same tools, other rights. Not tested yet.
+  instead of yours. Same tools, other rights.
 
 ## Notes
 

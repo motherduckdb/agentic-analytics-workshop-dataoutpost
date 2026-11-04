@@ -1,9 +1,9 @@
 # Plan
 
-Status: draft, last updated 2026-11-03. Owners: Mehdi Ouazza and Jacob Matson (MotherDuck).
+Last updated 2026-11-03. Owners: Mehdi Ouazza and Jacob Matson (MotherDuck).
 
 This file holds the original abstract, what we changed and why, the current agenda, the facts we
-checked, the decisions taken and what is still open. The draft deck in `slides/` follows the same
+checked, the decisions taken and what is still open. The deck in `slides/` follows the same
 agenda, and its speaker notes (press N) carry the same details per slide.
 
 ## The original abstract
@@ -223,12 +223,20 @@ guided run read it too but did not use it for conversion.
 - The rewritten prompt at level 1, and the setup prompt run by an agent on a clean machine
   (uv script, MotherDuck installer without its token prompt, PATH line in the profile).
 - Level 1 on the DuckDB 1.5.6 CLI. The tested run used the 1.4 CLI.
-- `claude mcp add --scope user` and `codex mcp add --url`. Only local scope was run.
-- Codex anywhere: skills in `.agents/skills` and `codex mcp add` come from the Codex docs.
+- `claude mcp add --scope user`. Only local scope was run.
+- A Codex session on the level 3 server. `codex mcp add --url` adds it (checked 2026-11-03 in a
+  throwaway `CODEX_HOME`, `codex mcp list` shows it).
+- Codex skills in `.agents/skills`: from the Codex docs.
 - The traces Dive on a traced level 4 run (nested agent, chat and tool spans).
-- The Agent Builder path of hands-on 4. Not deployed yet, and not run from this repo: its steps
-  come from the session that built it.
+- The Agent Builder path of hands-on 4. Not deployed yet (motherduck-website PR #3448 open,
+  /labs/agent-builder returns 404 on 2026-11-03), and not run from this repo: its steps come from
+  the session that built it. The slides and README no longer say it is not live: if it is not
+  live by the workshop date, skip the "Build your agent" demo and path B.
 - The Flight stretch in level 2.
+- The secure view share on Gloamwick (slide "Channel leads see their channel").
+- Service account tokens on the level 3 server ("If you finish early").
+- The Flight Explainer MCP app (`view_flight_run`).
+- Agent signup at `new.motherduck.com`: running it would create a real account.
 
 ## Chapter 1 in detail: what an agent is
 
@@ -476,7 +484,7 @@ Secure view facts (from the docs page, Oct 27 branch):
 - Service accounts have no email, so agent filters use `current_user`. Usernames are unique only
   within an org, so agent service accounts live in the devrel org.
 
-Draft share on Gloamwick (not run yet). Column names are from the `purchases` table;
+A share on Gloamwick, written from the docs and not run. Column names are from the `purchases` table;
 `channel_access` is a table we would add:
 
 ```sql
@@ -561,7 +569,7 @@ prompt, agent B runs as a channel lead through the secure view. The room shouts 
 - [ ] Full dry run with timings.
 - [ ] Update the abstract.
 
-## Proposed abstract (draft)
+## Proposed abstract
 
 > **The Next Data Stack Has No UI: Building Analytics Agents with Ducks**
 > Mehdi Ouazza (MotherDuck) · Jacob Matson (MotherDuck)

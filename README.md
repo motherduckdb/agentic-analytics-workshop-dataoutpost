@@ -7,8 +7,6 @@ Text to SQL is solved. Any model writes a valid query. What breaks analytics age
 access and trust. In this workshop you build an analytics agent in four levels, and at each level
 you control more of it.
 
-**Status: draft.** What was run and what was not: [PLAN.md](PLAN.md#exercise-runs).
-
 ## The hands-on
 
 | Hands-on | Folder | Time | What you do |

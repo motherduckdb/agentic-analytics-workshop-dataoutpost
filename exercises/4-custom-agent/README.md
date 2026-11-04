@@ -84,7 +84,7 @@ written to MotherDuck itself.
 
 [Agent Builder](https://motherduck.com/labs/agent-builder) is a web app to build an analytics
 agent: you pick the model, the prompt, the tools, the checks, the limits and the schedule. It is
-for learning, not for production. Coming soon: the link does not open yet.
+for learning, not for production.
 
 It runs the same loop as `agent.py`: the model picks each step and calls MotherDuck MCP tools. The
 harness around it is bigger. It pre-checks every query of the Dive, keeps edits in a draft, blocks

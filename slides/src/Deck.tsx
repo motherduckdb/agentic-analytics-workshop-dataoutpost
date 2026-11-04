@@ -185,7 +185,7 @@ export default function Deck() {
                 {slide.sourceLabel ?? 'MOTHERDUCK'} ↗
               </a>
             ) : (
-              <span>MOTHERDUCK · WORKSHOP DRAFT</span>
+              <span>MOTHERDUCK · WORKSHOP</span>
             )}
             <span>
               {String(current + 1).padStart(2, '0')} / {slides.length}

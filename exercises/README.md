@@ -51,9 +51,3 @@ duckgen's `guide.md` or answer keys: they contain the answers.
 - Levels 3 and 4 read `MOTHERDUCK_TOKEN` and `OPENROUTER_API_KEY` from a `.env` at the root of the
   repo: `cp .env.example .env`, then fill it in. Git ignores `.env`. The workshop key exports for
   Claude Code stay in your terminal. No key ever reaches the model.
-
-## Status
-
-All four levels were run end to end on Gloamwick on 2026-11-02. The prompts were rewritten on
-2026-11-03 and not rerun yet. Measured runs, findings and what is not tested yet are in
-[PLAN.md](../PLAN.md#exercise-runs), for the presenters.
