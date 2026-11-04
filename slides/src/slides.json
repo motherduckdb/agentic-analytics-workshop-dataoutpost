@@ -572,7 +572,7 @@
     "kind": "custom",
     "theme": "sand",
     "section": "LEVEL 4 · CUSTOM AGENT · DEMO",
-    "notes": "Presenter demo, not a participant step. Show it only if the generator exists by the workshop date; otherwise skip to the traces slide. The generator is one hosted app (built from /try patterns). Each knob is one component of an analytics agent. Next to the editor: a preview chat with a trace panel that shows every turn of the loop. Deploy gives the agent a unique link."
+    "notes": "Presenter demo. The generator now exists as Agent Builder (motherduck.com/labs/agent-builder once deployed; PR #3448 not merged yet), and it is also the second path of hands-on 4. If it is not live by the workshop date, skip to the traces slide. This table is the original spec: Agent Builder's knobs are the model, prompt, tools, checks, limits and schedule. Each knob is one component of an analytics agent. Next to the editor: a preview chat with a trace panel that shows every turn of the loop. Deploy gives the agent a unique link."
   },
   {
     "id": "redteam",
@@ -622,7 +622,7 @@
     ],
     "doneWhen": "your agent answers the question on the model you picked, and you can say which tools it called.",
     "needs": ["the .env from level 3", "uv"],
-    "notes": "Steps match exercises/4-custom-agent/README.md. agent.py reads OPENROUTER_API_KEY and MODEL from the repo's .env (an exported variable wins), and tells the server not to trace so a traced run is not counted twice. Tested 2026-11-03 on openai/gpt-6-luna, the workshop key's default: the workshop question answered in 38 s, 3 steps, 7 tool calls (list_company_tables, how_we_count, live_ops_impact, read_definition, describe_table x2, ask_data). It found the boss rework (Android D7 14.48% to 10.68%, iOS flat) and the chest video (ARPDAU +2 cents on both platforms); one table cell had a garbled unit, Luna is less careful with formatting than Sonnet. With TRACE_TO_MOTHERDUCK=1 the run wrote 12 spans: 20.6k input and 3.1k output tokens, $0.0028. agent.py starts the level 3 server itself, over stdio (server.py --stdio). The OpenRouter key never reaches the server, the MotherDuck token never reaches the model.",
+    "notes": "Steps match exercises/4-custom-agent/README.md. agent.py reads OPENROUTER_API_KEY and MODEL from the repo's .env (an exported variable wins), and tells the server not to trace so a traced run is not counted twice. Tested 2026-11-03 on openai/gpt-6-luna, the workshop key's default: the workshop question answered in 38 s, 3 steps, 7 tool calls (list_company_tables, how_we_count, live_ops_impact, read_definition, describe_table x2, ask_data). It found the boss rework (Android D7 14.48% to 10.68%, iOS flat) and the chest video (ARPDAU +2 cents on both platforms); one table cell had a garbled unit, Luna is less careful with formatting than Sonnet. With TRACE_TO_MOTHERDUCK=1 the run wrote 12 spans: 20.6k input and 3.1k output tokens, $0.0028. agent.py starts the level 3 server itself, over stdio (server.py --stdio). The OpenRouter key never reaches the server, the MotherDuck token never reaches the model. Path B, for anyone without a working level 3 or who wants a bigger harness: Agent Builder in the browser with the Dive Keeper template (README, Path B): simulate the data, look at the Dive, run the agent, move the data forward, run again. For learning, not production. Not deployed yet and not run from this repo. What the agent should do each week is in PLAN.md (The generator, Agent Builder).",
     "exercise": "exercises/4-custom-agent"
   },
   {

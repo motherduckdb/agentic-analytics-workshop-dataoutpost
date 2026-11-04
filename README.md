@@ -19,7 +19,7 @@ you control more of it.
 | 2B Guide | [`exercises/2b-guide/`](exercises/2b-guide/) | 5 min | Add a MotherDuck guide, ask again, compare |
 | 2C Dive | [`exercises/2c-dive/`](exercises/2c-dive/) | 5 min | Build a Dive and restyle it from the theme gallery |
 | 3 Custom MCP | [`exercises/3-custom-mcp/`](exercises/3-custom-mcp/) | 10 min | Your own MCP server in front of MotherDuck's: a tool only it has, a question log, the token it runs with. Bonus: traces in MotherDuck |
-| 4 Custom agent | [`exercises/4-custom-agent/`](exercises/4-custom-agent/) | 10 min | A 60-line agent loop on the model you pick, using your level 3 tools |
+| 4 Custom agent | [`exercises/4-custom-agent/`](exercises/4-custom-agent/) | 10 min | Two paths: a 60-line agent loop on the model you pick, using your level 3 tools, or Agent Builder in the browser on a simulated Dive |
 
 Each folder has a README with the same numbered steps, prompts, commands, time and "done when" as
 its slide. The slide build fails if they disagree. Dataset and questions:

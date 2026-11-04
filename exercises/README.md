@@ -14,7 +14,7 @@ You do not need to clone this repo before level 3. Levels 1 and 2 link to the tw
 | 2B Guide | [`2b-guide/`](2b-guide/README.md) | 5 min | a MotherDuck guide, the same question again |
 | 2C Dive | [`2c-dive/`](2c-dive/README.md) | 5 min | a Dive over the answer, restyled from the theme gallery |
 | 3 Custom MCP | [`3-custom-mcp/`](3-custom-mcp/README.md) | 10 min | your own MCP server in front of MotherDuck's, a tool only it has; bonus: traces in MotherDuck |
-| 4 Custom agent | [`4-custom-agent/`](4-custom-agent/README.md) | 10 min | your own loop, on the model you pick |
+| 4 Custom agent | [`4-custom-agent/`](4-custom-agent/README.md) | 10 min | two paths: your own loop on the model you pick, or Agent Builder in the browser on a simulated Dive |
 
 ## The data
 
