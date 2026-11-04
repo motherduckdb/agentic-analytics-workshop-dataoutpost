@@ -203,14 +203,29 @@ guided run read it too but did not use it for conversion.
   $0.0028. Fix found on the way: spans are flushed every second, since a server stopped with
   SIGTERM skips atexit.
 
+- `.env` at the repo root (2026-11-03): with no key in the environment, `server.py` read the
+  MotherDuck token from `.env` (over HTTP on another port, `live_ops_impact` returned rows), kept
+  the OpenRouter key out of its environment, and `agent.py` ran end to end from `.env` (52 s, 7 tool
+  calls, right answer).
+
+- Full flow in herdr (2026-11-03), Claude Code (Opus) in a fresh `~/gloamwick` clone, with only a
+  lowercase `motherduck_token` in the environment and an empty `.env`. The server read the
+  lowercase token. Level 3 steps 1, 4 and 5 worked, with the server added by
+  `claude mcp add --transport http` (local scope). Step 4 first ignored `live_ops_impact` (9
+  `ask_data` calls); after the server instructions and the tool description said to call it first
+  for live-ops questions, it did, and gave the right answer. 2C built the Dive and restyled it in
+  FT Salmon. Level 4 on Luna: right answer, `live_ops_impact` first. With
+  `TRACE_TO_MOTHERDUCK=1`, spans landed in `md:workshop_traces`, and the bonus prompt built a
+  traces Dive (not yet checked in the browser, and not yet on a traced level 4 run).
+
 ### Not tested yet
 
-- The rewritten prompts at levels 1 and 2C, and the setup prompt run by an agent on a clean machine
+- The rewritten prompt at level 1, and the setup prompt run by an agent on a clean machine
   (uv script, MotherDuck installer without its token prompt, PATH line in the profile).
 - Level 1 on the DuckDB 1.5.6 CLI. The tested run used the 1.4 CLI.
-- Adding the level 3 server with `claude mcp add --transport http` and `codex mcp add --url`.
+- `claude mcp add --scope user` and `codex mcp add --url`. Only local scope was run.
 - Codex anywhere: skills in `.agents/skills` and `codex mcp add` come from the Codex docs.
-- Tracing written to MotherDuck itself (tested against a local DuckDB file), and the Dive prompt.
+- The traces Dive on a traced level 4 run (nested agent, chat and tool spans).
 - The Flight stretch in level 2.
 
 ## Chapter 1 in detail: what an agent is

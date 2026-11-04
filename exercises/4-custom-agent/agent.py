@@ -1,10 +1,11 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["fastmcp==4.0.3", "httpx", "opentelemetry-sdk==1.45.2", "duckdb==1.5.6"]
+# dependencies = ["fastmcp==4.0.3", "httpx", "opentelemetry-sdk==1.45.2", "duckdb==1.5.6", "python-dotenv==1.2.4"]
 # ///
 """Level 4: the whole agent. Your loop, your model, your tools.
 
-The model is any OpenRouter model (OPENROUTER_API_KEY, MODEL). The workshop key allows
+The model is any OpenRouter model (OPENROUTER_API_KEY, MODEL, from your environment or the repo's
+.env, see .env.example). The workshop key allows
 openai/gpt-6-luna (default), anthropic/claude-haiku-5.5 and anthropic/claude-sonnet-5.5.
 The tools come from your level 3 MCP server, started as a subprocess.
 
@@ -21,8 +22,11 @@ import sys
 from pathlib import Path
 
 import httpx
+from dotenv import find_dotenv, load_dotenv
 from fastmcp import Client
 from fastmcp.client.transports import StdioTransport
+
+load_dotenv(find_dotenv(usecwd=True) or find_dotenv())  # the repo's .env; the environment wins
 
 MODEL = os.environ.get("MODEL", "openai/gpt-6-luna")
 MAX_STEPS = int(os.environ.get("MAX_STEPS", "12"))
@@ -62,7 +66,8 @@ async def model(messages: list, tools: list) -> dict:
 async def main(question: str) -> None:
     # The server gets the MotherDuck token. The model never sees it.
     # The agent traces the whole run, so the server does not trace a second time.
-    env = {k: v for k, v in os.environ.items() if k not in ("OPENROUTER_API_KEY", "TRACE_TO_MOTHERDUCK")}
+    env = {k: v for k, v in os.environ.items() if k != "OPENROUTER_API_KEY"}
+    env["TRACE_TO_MOTHERDUCK"] = "0"
     server = StdioTransport(command="uv", args=["run", "-q", str(SERVER), "--stdio"], env=env)
     with traces.agent_span(TRACER, "gloamwick-agent", MODEL, question) as run:
         async with Client(server) as mcp:

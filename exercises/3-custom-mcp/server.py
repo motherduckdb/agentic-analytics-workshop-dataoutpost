@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["fastmcp==4.0.3", "opentelemetry-sdk==1.45.2", "duckdb==1.5.6"]
+# dependencies = ["fastmcp==4.0.3", "opentelemetry-sdk==1.45.2", "duckdb==1.5.6", "python-dotenv==1.2.4"]
 # ///
 """Level 3 starter: your own MCP server in front of MotherDuck's.
 
@@ -9,7 +9,8 @@ rewrite their descriptions, add your own tool, and log every question.
 
 Run it:   uv run server.py      serves MCP on http://127.0.0.1:8000/mcp (PORT changes the port)
           uv run server.py --stdio   speaks MCP on stdin/stdout instead (level 4's agent.py uses this)
-The MotherDuck token comes from MOTHERDUCK_TOKEN and never reaches the agent.
+The MotherDuck token comes from MOTHERDUCK_TOKEN, in your environment or in the repo's .env (see
+.env.example). It never reaches the agent.
 Bonus: TRACE_TO_MOTHERDUCK=1 writes one OpenTelemetry span per tool call to MotherDuck (traces.py).
 """
 
@@ -19,10 +20,19 @@ import sys
 import time
 from typing import Any
 
+from dotenv import dotenv_values, find_dotenv
 from fastmcp import Client, FastMCP
 from fastmcp.client.transports import StreamableHttpTransport
 
-import traces
+# Settings from the nearest .env (see .env.example), without overriding the environment. Only these
+# keys: the OpenRouter key in the same file never reaches the server.
+SERVER_KEYS = {"MOTHERDUCK_TOKEN", "motherduck_token", "COMPANY_DB", "QUESTION_LOG", "PORT",
+               "TRACE_TO_MOTHERDUCK", "TRACES_DB"}
+for key, value in dotenv_values(find_dotenv(usecwd=True) or find_dotenv()).items():
+    if key in SERVER_KEYS and value and key not in os.environ:
+        os.environ[key] = value
+
+import traces  # noqa: E402  (reads TRACE_TO_MOTHERDUCK, so it comes after the .env)
 
 UPSTREAM = "https://api.motherduck.com/mcp"
 DATABASE = os.environ.get("COMPANY_DB", "gaming_gloamwick_liveops")
@@ -32,8 +42,10 @@ TRACER = traces.setup("company-data-mcp")
 mcp = FastMCP(
     "company-data",
     instructions=(
-        "Data for Gloamwick Studios. Call how_we_count before writing SQL. "
-        "Every ask_data call needs the user's question in plain words."
+        "Data for Gloamwick Studios. For any question about which live-ops changes moved retention "
+        "or revenue, call live_ops_impact first: it is the company's standard analysis. "
+        "Call how_we_count before writing your own SQL with ask_data. "
+        "Every ask_data and live_ops_impact call needs the user's question in plain words."
     ),
 )
 
@@ -46,7 +58,7 @@ async def upstream(tool: str, args: dict[str, Any], as_tool: str, question: str 
         try:
             transport = StreamableHttpTransport(
                 url=UPSTREAM,
-                headers={"Authorization": f"Bearer {os.environ['MOTHERDUCK_TOKEN']}"},
+                headers={"Authorization": f"Bearer {motherduck_token()}"},
             )
             async with Client(transport) as client:
                 result = (await client.call_tool_mcp(tool, args)).model_dump(by_alias=True, exclude_none=True)
@@ -55,6 +67,13 @@ async def upstream(tool: str, args: dict[str, Any], as_tool: str, question: str 
             raise
         traces.finish_tool(span, not result.get("isError"))
         return result
+
+
+def motherduck_token() -> str:
+    token = os.environ.get("MOTHERDUCK_TOKEN") or os.environ.get("motherduck_token")
+    if not token:
+        raise RuntimeError("No MotherDuck token: set MOTHERDUCK_TOKEN in your .env (see .env.example).")
+    return token
 
 
 def log(question: str, sql: str, outcome: str) -> None:
@@ -101,8 +120,10 @@ async def read_definition(guide_uuid: str) -> Any:
 # Your own tool: the SQL for a question the business asks every week.
 @mcp.tool
 async def live_ops_impact(question: str, days: int = 14) -> Any:
-    """D7 retention and ARPDAU in the N days before and after each live-ops change, by platform.
+    """The company's standard live-ops analysis. Call it first for any question about which live-ops
+    changes moved day-7 retention or revenue per daily active user.
 
+    Returns D7 retention and ARPDAU in the N days before and after each live-ops change, by platform.
     question: the user's question, in their words. It is logged.
     """
     sql = f"""

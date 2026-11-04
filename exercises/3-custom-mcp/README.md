@@ -1,7 +1,8 @@
 # Hands-on 3: your own MCP server
 
-Time: 10 minutes. You need git, uv, `MOTHERDUCK_TOKEN` exported, and the Gloamwick share attached in
-your MotherDuck account (step 3 of [hands-on 2A](../2a-mcp/README.md) does it).
+Time: 10 minutes. You need git, uv, a MotherDuck token, your OpenRouter key (the workshop key, for
+level 4), and the Gloamwick share attached in your MotherDuck account (step 3 of
+[hands-on 2A](../2a-mcp/README.md) does it).
 
 [`server.py`](server.py) is a small MCP server that sits in front of MotherDuck's, following the
 [MotherDuck white-label guide](https://motherduck.com/docs/key-tasks/ai-and-motherduck/mcp-workflows/white-label-mcp-server/).
@@ -10,7 +11,7 @@ Three things to look for:
 - **A tool only your server has.** `live_ops_impact` holds the SQL for a question the business asks
   every week. No other MCP server has it. The other tools forward MotherDuck's under your names.
 - **The token is yours to pick.** The server calls MotherDuck with whatever is in
-  `MOTHERDUCK_TOKEN`, and the agent never sees it. Start it with a
+  `MOTHERDUCK_TOKEN` in your `.env`, and the agent never sees it. Start it with a
   [service account](https://motherduck.com/docs/key-tasks/service-accounts-guide/create-and-configure-service-accounts/)'s
   token and every user of your server gets exactly that account's rights: only the databases and
   shares it was granted, read-only with a read scaling token, and with a
@@ -26,27 +27,32 @@ you would deploy the server first.
 
 The prompts are the same as on the slide. Paste them as they are.
 
-1. Clone the workshop repo, then ask your agent to walk you through the server:
+1. Clone the workshop repo into your workshop folder and create your `.env` from the example. Then
+   open `.env` and fill in `MOTHERDUCK_TOKEN` (create one in MotherDuck: **Settings**,
+   **Integrations**, [**Access tokens**](https://app.motherduck.com/settings/tokens)) and
+   `OPENROUTER_API_KEY` (your key from [the minter](https://motherduck.com/minter/w/next-data-stack-has-no-ui/)).
+   Then ask your agent to walk you through the server.
 
    ```sh
-   git clone https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost.git
+   cd ~/gloamwick && git clone https://github.com/motherduckdb/agentic-analytics-workshop-dataoutpost.git
+   cd agentic-analytics-workshop-dataoutpost && cp .env.example .env
    ```
 
    Paste:
 
    > Explain agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp/server.py in five lines: its tools, the one that only exists here, where the token comes from, what it logs.
 
-2. Start your server in a second terminal, with `MOTHERDUCK_TOKEN` exported there too. Leave it
-   running: it serves MCP on `http://127.0.0.1:8000/mcp`.
+2. Start your server in a second terminal and leave it running. It reads your token from `.env` and
+   serves MCP on `http://127.0.0.1:8000/mcp`.
 
    ```sh
-   cd agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp && uv run server.py
+   cd ~/gloamwick/agentic-analytics-workshop-dataoutpost/exercises/3-custom-mcp && uv run server.py
    ```
 
 3. Add the server to your agent, then restart your agent:
 
    ```sh
-   claude mcp add --transport http company-data http://127.0.0.1:8000/mcp
+   claude mcp add --scope user --transport http company-data http://127.0.0.1:8000/mcp
    codex mcp add company-data --url http://127.0.0.1:8000/mcp
    ```
 
@@ -104,8 +110,13 @@ motherduck query "FROM workshop_traces.spans ORDER BY start_time DESC LIMIT 10"
 
 ## Notes
 
+- `server.py` and `agent.py` read the `.env` at the root of the repo, whatever folder they run in.
+  A variable already set in your environment wins over `.env`. The server only takes the MotherDuck
+  values from it: your OpenRouter key never reaches the server.
+- `--scope user` makes Claude Code see the server in every folder, not only the one you ran the
+  command in.
 - `PORT` changes the port (default 8000), `COMPANY_DB` the database (default
-  `gaming_gloamwick_liveops`), `QUESTION_LOG` the log file.
+  `gaming_gloamwick_liveops`), `QUESTION_LOG` the log file. They can go in `.env` too.
 - `uv run server.py --stdio` speaks MCP on stdin and stdout instead. Level 4's `agent.py` starts it
   that way.
 - `how_we_count` and `read_definition` forward `get_query_guide` and `get_guide`, so the guide you

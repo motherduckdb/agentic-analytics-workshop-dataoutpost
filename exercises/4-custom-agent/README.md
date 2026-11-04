@@ -1,6 +1,6 @@
 # Hands-on 4: your own agent
 
-Time: 10 minutes. You need the workshop key, `MOTHERDUCK_TOKEN` and the level 3 server (this
+Time: 10 minutes. You need the `.env` from level 3 (MotherDuck token and OpenRouter key) and the level 3 server (this
 agent starts it for you).
 
 [`agent.py`](agent.py) is the whole agent in about 60 lines: a loop, a model on OpenRouter, and
@@ -11,13 +11,11 @@ yours to write.
 
 The prompt is the same as on the slide. Paste it as it is.
 
-1. Point the agent at the workshop key and the default model (the minter page shows the same
-   lines):
+1. Go to the level 4 folder of the repo you cloned at level 3. `agent.py` reads your OpenRouter key
+   and the model from the same `.env` (`MODEL` defaults to `openai/gpt-6-luna`).
 
    ```sh
-   cd ../4-custom-agent   # from the level 3 folder of the repo you cloned
-   export OPENROUTER_API_KEY=<your workshop key>
-   export MODEL=openai/gpt-6-luna
+   cd ~/gloamwick/agentic-analytics-workshop-dataoutpost/exercises/4-custom-agent
    ```
 
 2. Run your agent on the workshop question:
