@@ -23,4 +23,6 @@ export type Slide = {
   status?: string
   // Repo folder whose README.md carries the same steps, for example exercises/1-local.
   exercise?: string
+  // The README section this hands-on slide follows, when not "## Steps" (a second path).
+  readmeSection?: string
 }

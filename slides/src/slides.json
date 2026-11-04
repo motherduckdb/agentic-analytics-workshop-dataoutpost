@@ -551,9 +551,9 @@
     "theme": "duck",
     "kind": "title",
     "title": "Level 4 · Custom agent",
-    "body": "Your loop, your model, your link.",
+    "body": "Your loop, your model. In Python, or in the browser.",
     "section": "LEVEL 4 · CUSTOM AGENT",
-    "notes": "1:12. Twelve minutes. The last rented parts were the harness and the model. Here you own both: the loop is about 60 lines, the model is any of the three models the workshop key allows."
+    "notes": "1:12. Twelve minutes. The last rented parts were the harness and the model. Here you own both: the loop is about 60 lines, the model is any of the three models the workshop key allows. Hands-on 4 has two paths: path A is agent.py on the workshop key, path B is Agent Builder in the browser with the Dive Keeper template."
   },
   {
     "id": "loop-code",
@@ -572,7 +572,7 @@
     "kind": "custom",
     "theme": "sand",
     "section": "LEVEL 4 · CUSTOM AGENT · DEMO",
-    "notes": "Presenter demo. The generator now exists as Agent Builder (motherduck.com/labs/agent-builder once deployed; PR #3448 not merged yet), and it is also the second path of hands-on 4. If it is not live by the workshop date, skip to the traces slide. This table is the original spec: Agent Builder's knobs are the model, prompt, tools, checks, limits and schedule. Each knob is one component of an analytics agent. Next to the editor: a preview chat with a trace panel that shows every turn of the loop. Deploy gives the agent a unique link."
+    "notes": "Presenter demo of Agent Builder (motherduck.com/labs/agent-builder once deployed; PR #3448 in the website repo, not merged yet), also path B of hands-on 4. If it is not live by the workshop date, skip to the traces slide. Each row is a setting on its Build page, and each is one component of an analytics agent. Show: the Build page, Prepare the simulation, the Dive, a Preview run with its trace, and the same run in MotherDuck (Open the run in MotherDuck)."
   },
   {
     "id": "redteam",
@@ -596,7 +596,7 @@
     "id": "ho-agent",
     "theme": "sand",
     "kind": "custom",
-    "title": "Hands-on 4: your own agent",
+    "title": "Hands-on 4, path A: your own loop",
     "section": "LEVEL 4 · CUSTOM AGENT · HANDS-ON",
     "minutes": 10,
     "steps": [
@@ -624,6 +624,29 @@
     "needs": ["the .env from level 3", "uv"],
     "notes": "Steps match exercises/4-custom-agent/README.md. agent.py reads OPENROUTER_API_KEY and MODEL from the repo's .env (an exported variable wins), and tells the server not to trace so a traced run is not counted twice. Tested 2026-11-03 on openai/gpt-6-luna, the workshop key's default: the workshop question answered in 38 s, 3 steps, 7 tool calls (list_company_tables, how_we_count, live_ops_impact, read_definition, describe_table x2, ask_data). It found the boss rework (Android D7 14.48% to 10.68%, iOS flat) and the chest video (ARPDAU +2 cents on both platforms); one table cell had a garbled unit, Luna is less careful with formatting than Sonnet. With TRACE_TO_MOTHERDUCK=1 the run wrote 12 spans: 20.6k input and 3.1k output tokens, $0.0028. agent.py starts the level 3 server itself, over stdio (server.py --stdio). The OpenRouter key never reaches the server, the MotherDuck token never reaches the model. Path B, for anyone without a working level 3 or who wants a bigger harness: Agent Builder in the browser with the Dive Keeper template (README, Path B): simulate the data, look at the Dive, run the agent, move the data forward, run again. For learning, not production. Not deployed yet and not run from this repo. What the agent should do each week is in PLAN.md (The generator, Agent Builder).",
     "exercise": "exercises/4-custom-agent"
+  },
+  {
+    "id": "ho-agent-builder",
+    "theme": "sand",
+    "kind": "custom",
+    "title": "Hands-on 4, path B: Agent Builder",
+    "section": "LEVEL 4 · CUSTOM AGENT · HANDS-ON",
+    "minutes": 10,
+    "status": "draft: not live yet",
+    "steps": [
+      { "text": "Open [Agent Builder](https://motherduck.com/labs/agent-builder), sign in with MotherDuck, New agent, Dive Keeper template." },
+      { "text": "Build, step 1 Access: paste your OpenRouter key." },
+      { "text": "Simulate the data: Build, step 2, Prepare the simulation." },
+      { "text": "Look at the Dive before the agent runs: click its title." },
+      { "text": "Run the agent: Preview run. Read the trace, then the flags on the Dive." },
+      { "text": "Move the data forward, run again. Review the change it proposes on History." },
+      { "text": "Compare with agent.py: which of these checks would you add to your loop first?" }
+    ],
+    "doneWhen": "you looked at the Dive before the first run, the agent's findings are on it, and the agent ran again on a week you moved forward.",
+    "needs": ["a MotherDuck account", "your OpenRouter key"],
+    "notes": "Path B of hands-on 4, for anyone without a working level 3 or who wants a bigger harness. Steps match the Path B section of exercises/4-custom-agent/README.md (the build checks it through readmeSection). Agent Builder runs the same loop as agent.py with a bigger harness: it pre-checks every query of the Dive, keeps edits in a draft, blocks writes to any other Dive, caps steps, tokens, cost and time, verifies the draft and asks for approval. Every run is a MotherDuck Flight in the participant's account; Open the run in MotherDuck shows it step by step. Prepare the simulation copies Gloamwick into agent_builder_sim_<id> with data up to 2025-03-30 and saves the Dive. The first run is the baseline and flags up to 3 findings. What the agent should do each week is in PLAN.md (The generator, Agent Builder): the first change to review is expected at the web launch (2025-05-12). About $0.002 to $0.005 per run on openai/gpt-6-luna. For learning, not production. Not live until PR #3448 in the website repo is merged; run it on a fresh account before the workshop.",
+    "exercise": "exercises/4-custom-agent",
+    "readmeSection": "Path B: Agent Builder in the browser"
   },
   {
     "id": "level-runs",

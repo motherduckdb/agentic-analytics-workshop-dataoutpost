@@ -440,9 +440,10 @@ function GuidesPull() {
 }
 
 function Knobs() {
+  // The Build page of Agent Builder: one row per setting, one component of an analytics agent.
   const rows = [
-    ['Model', 'Haiku · Sonnet · Opus', 'cost and speed vs quality'],
-    ['Data', 'which database or share', 'it only knows what it can reach'],
+    ['Model', 'GPT-6 Luna · Haiku 5.5 · Sonnet 5.5', 'cost and speed vs quality'],
+    ['Data', 'the Dive it keeps · a simulation', 'it only knows what it can reach'],
     [
       'Context',
       'no guide · guide as tool · guide in prompt',
@@ -450,12 +451,16 @@ function Knobs() {
     ],
     [
       'Tools',
-      'query · list_tables · dives · query_rw',
+      'read_dive · query · list_columns · edit_dive_content',
       'its power is its tool list'
     ],
-    ['Harness', 'max steps · row cap · read-only', 'limits live in the app'],
-    ['Identity', 'HQ · channel lead', 'who it runs as'],
-    ['Interface', 'name · starter questions', 'what the user sees']
+    [
+      'Harness',
+      'pre-check · draft · step, token, cost and time limits',
+      'limits live in code, not in the prompt'
+    ],
+    ['Schedule', 'every 5 min · stops after 2 h', 'an agent that runs without you'],
+    ['Review', 'propose and wait · report only', 'who approves the change']
   ]
   return (
     <div className="ws-visual">
@@ -463,7 +468,7 @@ function Knobs() {
         <thead>
           <tr>
             <th>Component</th>
-            <th>Knob</th>
+            <th>Setting</th>
             <th>What you learn</th>
           </tr>
         </thead>
@@ -477,6 +482,9 @@ function Knobs() {
           ))}
         </tbody>
       </table>
+      <p className="ws-caption">
+        Agent Builder: <code>motherduck.com/labs/agent-builder</code>, runs on MotherDuck Flights
+      </p>
     </div>
   )
 }

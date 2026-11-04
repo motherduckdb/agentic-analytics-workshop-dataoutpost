@@ -28,7 +28,12 @@ async function checkExercises() {
       problems.push(`${s.id}: ${s.exercise}/README.md not found`)
       continue
     }
-    const section = readme.split(/^## Steps$/m)[1]?.split(/^## /m)[0] ?? ''
+    // A slide follows "## Steps", or the README section it names in readmeSection (a second path
+    // of the same exercise). There, "Done when:" is a paragraph of the section.
+    const heading = s.readmeSection ?? 'Steps'
+    const esc = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const section = readme.split(new RegExp(`^## ${esc}$`, 'm'))[1]?.split(/^## /m)[0] ?? ''
+    if (!section) problems.push(`${s.id}: no "## ${heading}" section in ${s.exercise}/README.md`)
     const count = (section.match(/^\d+\. /gm) ?? []).length
     if (count !== (s.steps ?? []).length) {
       problems.push(`${s.id}: ${s.steps?.length ?? 0} steps on the slide, ${count} in the README`)
@@ -45,7 +50,9 @@ async function checkExercises() {
       problems.push(`${s.id}: ${s.minutes} min on the slide, ${time ?? 'no time'} in the README`)
     }
     const norm = t => t.replace(/`/g, '').replace(/\s+/g, ' ').trim().replace(/\.$/, '').toLowerCase()
-    const done = readme.split(/^## Done when$/m)[1]?.split(/^## /m)[0] ?? ''
+    const done = s.readmeSection
+      ? (section.match(/^Done when: ([\s\S]*?)(?:\n\s*\n|(?![\s\S]))/m)?.[1] ?? '')
+      : (readme.split(/^## Done when$/m)[1]?.split(/^## /m)[0] ?? '')
     if (s.doneWhen && norm(done) !== norm(s.doneWhen)) {
       problems.push(`${s.id}: "done when" differs:\n    slide:  ${s.doneWhen}\n    README: ${done.trim()}`)
     }
